@@ -1,5 +1,4 @@
-#ifndef LOCONET_ACCESSORY_DECODER_REV_C_H
-#define LOCONET_ACCESSORY_DECODER_REV_C_H
+#pragma once
 
 #include "Arduino.h"
 
@@ -63,5 +62,3 @@ const uint8_t OUTPUTS[OUTPUT_COUNT] = {
 
 #define STATUS_LED
 #define PIN_STATUS_LED 0
-
-#endif
