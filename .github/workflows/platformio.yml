@@ -46,4 +46,4 @@ jobs:
         pio pkg update --global
 
     - name: Run ${{ matrix.test-platform }} Tests
-      run: pip ci --board ${{ matrix.test-platform }} Arcrail/
+      run: pio ci --board ${{ matrix.test-platform }} Arcrail/
