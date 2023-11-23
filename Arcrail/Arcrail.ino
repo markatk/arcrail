@@ -1,13 +1,12 @@
-#include <Arduino.h>
+#include "configuration.h"
+
+#include "led.h"
 
 void setup() {
-    pinMode(LED_BUILTIN, OUTPUT);
+    led_init();
+
+    status_led_set(true);
 }
 
 void loop() {
-    digitalWrite(LED_BUILTIN, HIGH);
-    delay(2500);
-
-    digitalWrite(LED_BUILTIN, LOW);
-    delay(500);
 }
