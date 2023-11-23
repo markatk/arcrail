@@ -55,12 +55,30 @@
 //===========================================================================
 
 //===========================================================================
+//======================== Settings =========================================
+//===========================================================================
+
+#ifndef SETTINGS_DEFAULT_MODULE_VALUE
+    #define SETTINGS_DEFAULT_MODULE_VALUE 1
+#endif
+
+#ifndef SETTINGS_DEFAULT_MODE_VALUE
+    #define SETTINGS_DEFAULT_MODE_VALUE 1001
+#endif
+
+//===========================================================================
 //======================== Outputs ==========================================
 //===========================================================================
 
 #ifdef USE_OUTPUTS
     #ifndef OUTPUT_COUNT
         #error Output count is not defined
+    #endif
+
+    #define OUTPUT_COUNT_MAX 20
+
+    #if OUTPUT_COUNT > OUTPUT_COUNT_MAX
+        #error Output count must not be greater than OUTPUT_COUNT_MAX
     #endif
 #endif
 
