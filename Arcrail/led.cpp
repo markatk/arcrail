@@ -8,10 +8,18 @@ void led_init() {
 #endif
 }
 
-void status_led_set(uint8_t value) {
-#ifdef STATUS_LED_INVERT_OUTPUT
-    digitalWrite(PIN_STATUS_LED, !value);
-#else
-    digitalWrite(PIN_STATUS_LED, value);
-#endif
+void led_update() {
 }
+
+#ifdef STATUS_LED
+void status_led_set(uint8_t value) {
+    #ifdef STATUS_LED_INVERT_OUTPUT
+    digitalWrite(PIN_STATUS_LED, !value);
+    #else
+    digitalWrite(PIN_STATUS_LED, value);
+    #endif
+}
+
+void status_led_blink() {
+}
+#endif

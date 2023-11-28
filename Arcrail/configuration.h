@@ -36,7 +36,7 @@
 //======================== Loconet ==========================================
 //===========================================================================
 
-#ifdef LOCONET
+#ifdef USE_LOCONET
     #ifndef PIN_LOCONET_RX
         #error Loconet rx pin is not defined
     #endif
