@@ -27,11 +27,11 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-
 
-    - name: Cache PlatformIO
-      uses: actions/cache@v3
-      with:
-        path: ~/.platformio
-        key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+    # - name: Cache PlatformIO
+    #   uses: actions/cache@v3
+    #   with:
+    #     path: ~/.platformio
+    #     key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
 
     - name: Select Python 3.7
       uses: actions/setup-python@v3
@@ -46,4 +46,4 @@ jobs:
         pio pkg update --global
 
     - name: Run ${{ matrix.test-platform }} Tests
-      run: pio ci --board ${{ matrix.test-platform }} Arcrail/
+      run: pio ci --board ${{ matrix.test-platform }} Arcrail
