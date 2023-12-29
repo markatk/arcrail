@@ -100,7 +100,7 @@ void notifyLNCVprogrammingStop(uint16_t typeNumber, uint16_t moduleAddress) {
 #endif
 }
 
-int8_t notifyLNCVread(uint16_t typeNumber, uint16_t cv, uint16_t, uint16_t &value) {
+int8_t notifyLNCVread(uint16_t typeNumber, uint16_t cv, uint16_t &value) {
     if (_programming == false || typeNumber != LOCONET_TYPE_NUMBER) {
         return -1;
     }
