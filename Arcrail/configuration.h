@@ -8,8 +8,8 @@
 
 // uncomment the desired board in the following section or define a custom
 // board in the following section
-#define BOARD_LOCONET_ACCESSORY_DECODER_REV_C
-// #define BOARD_LOCONET_ACCESSORY_DECODER_REV_D
+// #define BOARD_LOCONET_ACCESSORY_DECODER_REV_C
+#define BOARD_LOCONET_ACCESSORY_DECODER_REV_D
 // #define BOARD_LOCONET_FEEDBACK_DECODER_REV_A
 
 #ifdef BOARD_LOCONET_ACCESSORY_DECODER_REV_C
