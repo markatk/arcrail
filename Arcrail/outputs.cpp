@@ -114,6 +114,7 @@ void outputs_parse(uint16_t address, bool direciton) {
 
     for (uint8_t i = 0; i < OUTPUT_COUNT; i++) {
         if (settings_get_output_turn_on_address(i, &output_address, &output_direction)) {
+            // TODO: Support option to ignore direction
             if (output_address == address && output_direction == direciton) {
                 // only enable the output if no delay is configured
                 if (settings_has_output_delay(i) == false) {
@@ -125,6 +126,7 @@ void outputs_parse(uint16_t address, bool direciton) {
         }
 
         if (settings_get_output_turn_off_address(i, &output_address, &output_direction)) {
+            // TODO: Support option to ignore direction
             if (output_address == address && output_direction == direciton) {
                 digitalWrite(OUTPUTS[i], LOW);
 
