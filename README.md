@@ -13,3 +13,15 @@ __This project is in early development!__ Use with caution!
 ## Description
 
 Arduino based firmware for model railroad accessory decoders. Thus the project's name as a combination of the words arduino, accessory and railroad.
+
+## Features
+
+- Control digital outputs (e.g. turnout, signal control or lights)
+- Control outputs with PWM (e.g. fade or dim lights)
+- Control servos
+- Control motors
+- Monitor inputs (rail feedback system)
+
+## Boards
+
+Alongside official arduino boards purpose build boards are supported.
