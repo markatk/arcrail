@@ -120,8 +120,8 @@ void outputs_parse(uint16_t address, bool direciton) {
 
     for (uint8_t i = 0; i < OUTPUT_COUNT; i++) {
         if (settings_get_output_turn_on_address(i, &output_address, &output_direction)) {
-            // TODO: Support option to ignore direction
-            if (output_address == address && output_direction == direciton) {
+            // if output_direction = 2 ignore the direction of the command
+            if (output_address == address && (output_direction == direciton || output_direction == 2)) {
                 // only enable the output if no delay is configured
                 if (settings_has_output_delay(i) == false) {
                     write_output(i, HIGH);
@@ -132,8 +132,8 @@ void outputs_parse(uint16_t address, bool direciton) {
         }
 
         if (settings_get_output_turn_off_address(i, &output_address, &output_direction)) {
-            // TODO: Support option to ignore direction
-            if (output_address == address && output_direction == direciton) {
+            // if output_direction = 2 ignore the direction of the command
+            if (output_address == address && (output_direction == direciton || output_direction == 2)) {
                 write_output(i, LOW);
 
                 // reset switching time so output is not triggered
