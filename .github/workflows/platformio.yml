@@ -50,3 +50,5 @@ jobs:
 
     - name: Run ${{ matrix.test-platform }} Tests
       run: pio ci --project-conf platformio.ini --environment ${{ matrix.test-platform }} Arcrail
+      env:
+        PLATFORMIO_BOARDS_DIR: "${{github.workspace}}/boards"
