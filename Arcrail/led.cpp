@@ -29,6 +29,7 @@ void led_update() {
         return;
     }
 
+#ifdef STATUS_LED
     if (_status_led_mode == LED_MODE_BLINK) {
         // wait till the delay is over
         if (_status_led_delay > 0) {
@@ -39,6 +40,7 @@ void led_update() {
             _status_led_delay = _status_led_time;
         }
     }
+#endif
 }
 
 #ifdef STATUS_LED
