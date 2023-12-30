@@ -29,9 +29,10 @@
 //======================== Firmware =========================================
 //===========================================================================
 
-// TODO: Improve firmware version format. Maybe something like 102 equals 1.02
+// firmware version is a combination of major and minor version
+// for example 205 means 2.05
 #ifndef FIRMWARE_VERSION
-    #define FIRMWARE_VERSION 1
+    #define FIRMWARE_VERSION 100
 #endif
 
 //===========================================================================
