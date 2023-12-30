@@ -11,13 +11,17 @@ uint8_t _switching_parameter[OUTPUT_COUNT];
 uint16_t _switching_delay[OUTPUT_COUNT];
 
 void _configure_switching_mode(uint8_t output);
+uint8_t read_output(uint8_t output);
+void write_output(uint8_t output, uint8_t value);
+void toggle_output(uint8_t output);
 #endif
 
 void outputs_init() {
 #ifdef USE_OUTPUTS
     for (auto i = 0; i < OUTPUT_COUNT; i++) {
         pinMode(OUTPUTS[i], OUTPUT);
-        digitalWrite(OUTPUTS[i], LOW);
+
+        write_output(i, LOW);
 
         _switching_time[i] = 0;
         _switching_mode[i] = SWITCHING_MODE_OFF;
@@ -53,15 +57,13 @@ void outputs_update() {
 
             switch (_switching_mode[i]) {
                 case SWITCHING_MODE_TIME:
-                    // disable output
-                    digitalWrite(OUTPUTS[i], HIGH);
+                    write_output(i, LOW);
 
                     break;
 
                 case SWITCHING_MODE_BLINK:
                 case SWITCHING_MODE_RANDOM:
-                    // toggle output
-                    digitalWrite(OUTPUTS[i], !digitalRead(OUTPUTS[i]));
+                    toggle_output(i);
 
                     break;
 
@@ -82,24 +84,21 @@ void outputs_update() {
         // trigger the output according to the configured mode
         switch (_switching_mode[i]) {
             case SWITCHING_MODE_TIME:
-                // disable output
-                digitalWrite(OUTPUTS[i], LOW);
+                write_output(i, LOW);
 
                 _switching_mode[i] = SWITCHING_MODE_OFF;
 
                 break;
 
             case SWITCHING_MODE_BLINK:
-                // toggle output
-                digitalWrite(OUTPUTS[i], !digitalRead(OUTPUTS[i]));
+                toggle_output(i);
 
                 _switching_time[i] = _switching_parameter[i];
 
                 break;
 
             case SWITCHING_MODE_RANDOM:
-                // toggle output
-                digitalWrite(OUTPUTS[i], !digitalRead(OUTPUTS[i]));
+                toggle_output(i);
 
                 _switching_time[i] = random(_switching_parameter[i]);
 
@@ -125,7 +124,7 @@ void outputs_parse(uint16_t address, bool direciton) {
             if (output_address == address && output_direction == direciton) {
                 // only enable the output if no delay is configured
                 if (settings_has_output_delay(i) == false) {
-                    digitalWrite(OUTPUTS[i], HIGH);
+                    write_output(i, HIGH);
                 }
 
                 _configure_switching_mode(i);
@@ -135,7 +134,7 @@ void outputs_parse(uint16_t address, bool direciton) {
         if (settings_get_output_turn_off_address(i, &output_address, &output_direction)) {
             // TODO: Support option to ignore direction
             if (output_address == address && output_direction == direciton) {
-                digitalWrite(OUTPUTS[i], LOW);
+                write_output(i, LOW);
 
                 // reset switching time so output is not triggered
                 _switching_time[i] = 0;
@@ -177,5 +176,21 @@ void _configure_switching_mode(uint8_t output) {
         default:
             break;
     }
+}
+
+uint8_t read_output(uint8_t output) {
+    return digitalRead(OUTPUTS[output]);
+}
+
+void write_output(uint8_t output, uint8_t value) {
+    #ifdef INVERT_OUTPUTS
+    digitalWrite(OUTPUTS[output], !value);
+    #else
+    digitalWrite(OUTPUTS[output], value);
+    #endif
+}
+
+void toggle_output(uint8_t output) {
+    write_output(output, read_output(output));
 }
 #endif
