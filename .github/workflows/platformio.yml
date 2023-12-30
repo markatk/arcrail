@@ -14,6 +14,9 @@ jobs:
         # AVR
         - uno
 
+        # Custom boards
+        - loconet-accessory-decoder-rev-c
+
     steps:
 
     - name: Check out the PR
