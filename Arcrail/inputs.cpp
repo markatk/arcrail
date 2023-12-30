@@ -49,8 +49,11 @@ void send_state(uint8_t input, uint8_t state) {
     }
 
     #ifdef USE_LOCONET
-    // TODO: Make inversion of state optional via define
+        #ifdef INVERT_INPUTS
     loconet_report_sensor(address, !state);
+        #else
+    loconet_report_sensor(address, state);
+        #endif
     #endif
 }
 #endif

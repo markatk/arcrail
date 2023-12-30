@@ -16,6 +16,7 @@
 
 #define USE_INPUTS
 #define INPUT_COUNT 8
+#define INVERT_INPUTS
 
 #define INPUT_1 9
 #define INPUT_2 7
