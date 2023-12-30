@@ -4,14 +4,17 @@
 #include "settings.h"
 #include "timer.h"
 
+#ifdef USE_OUTPUTS
 uint8_t _switching_mode[OUTPUT_COUNT];
 uint8_t _switching_time[OUTPUT_COUNT];
 uint8_t _switching_parameter[OUTPUT_COUNT];
 uint16_t _switching_delay[OUTPUT_COUNT];
 
 void _configure_switching_mode(uint8_t output);
+#endif
 
 void outputs_init() {
+#ifdef USE_OUTPUTS
     for (auto i = 0; i < OUTPUT_COUNT; i++) {
         pinMode(OUTPUTS[i], OUTPUT);
         digitalWrite(OUTPUTS[i], LOW);
@@ -21,9 +24,11 @@ void outputs_init() {
         _switching_parameter[i] = 0;
         _switching_delay[i] = 0;
     }
+#endif
 }
 
 void outputs_update() {
+#ifdef USE_OUTPUTS
     // wait till timer was triggered
     if (timer_was_triggered() == false) {
         return;
@@ -104,9 +109,11 @@ void outputs_update() {
                 break;
         }
     }
+#endif
 }
 
 void outputs_parse(uint16_t address, bool direciton) {
+#ifdef USE_OUTPUTS
     // check each output if given address is assigned
     // loop is needed since more than 1 output can listen to the same address
     uint16_t output_address;
@@ -136,8 +143,10 @@ void outputs_parse(uint16_t address, bool direciton) {
             }
         }
     }
+#endif
 }
 
+#ifdef USE_OUTPUTS
 void _configure_switching_mode(uint8_t output) {
     // check if any switching mode is configured
     uint8_t switching_mode;
@@ -169,3 +178,4 @@ void _configure_switching_mode(uint8_t output) {
             break;
     }
 }
+#endif
