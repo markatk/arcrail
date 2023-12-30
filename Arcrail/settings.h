@@ -24,3 +24,7 @@ bool settings_get_output_switching_2nd_parameter(uint8_t output, bool *enabled, 
 bool settings_get_output_delay(uint8_t output, uint16_t *delay);
 
 bool settings_has_output_delay(uint8_t output);
+
+bool settings_get_input_address(uint8_t input, uint16_t *address);
+
+bool settings_get_input_delay(uint8_t input, uint16_t *delay);

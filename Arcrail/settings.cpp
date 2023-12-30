@@ -8,6 +8,8 @@
 #define CV_SWITCHING_MODE_BASE 61
 #define CV_SWITCHING_2ND_PARAMETER_BASE 81
 #define CV_OUTPUT_DELAY_BASE 101
+#define CV_INPUT_ADDRESS_BASE 201
+#define CV_INPUT_ADDRESS_DELAY 221
 
 bool _is_valid_cv(uint16_t cv);
 bool _handle_programming_helper(uint16_t value);
@@ -52,6 +54,7 @@ bool settings_get_value(uint16_t address, uint16_t *value) {
 }
 
 bool settings_get_output_turn_on_address(uint8_t output, uint16_t *address, uint8_t *direction) {
+#ifdef USE_OUTPUTS
     if (output >= OUTPUT_COUNT) {
         return false;
     }
@@ -71,9 +74,13 @@ bool settings_get_output_turn_on_address(uint8_t output, uint16_t *address, uint
     }
 
     return true;
+#else
+    return false;
+#endif
 }
 
 bool settings_get_output_turn_off_address(uint8_t output, uint16_t *address, uint8_t *direction) {
+#ifdef USE_OUTPUTS
     if (output >= OUTPUT_COUNT) {
         return false;
     }
@@ -93,9 +100,13 @@ bool settings_get_output_turn_off_address(uint8_t output, uint16_t *address, uin
     }
 
     return true;
+#else
+    return false;
+#endif
 }
 
 bool settings_get_output_switching_mode(uint8_t output, uint8_t *mode, uint16_t *parameter) {
+#ifdef USE_OUTPUTS
     if (output >= OUTPUT_COUNT) {
         return false;
     }
@@ -115,9 +126,13 @@ bool settings_get_output_switching_mode(uint8_t output, uint8_t *mode, uint16_t 
     }
 
     return true;
+#else
+    return false;
+#endif
 }
 
 bool settings_get_output_switching_2nd_parameter(uint8_t output, bool *enabled, uint16_t *parameter) {
+#ifdef USE_OUTPUTS
     if (output >= OUTPUT_COUNT) {
         return false;
     }
@@ -137,23 +152,58 @@ bool settings_get_output_switching_2nd_parameter(uint8_t output, bool *enabled, 
     }
 
     return true;
+#else
+    return false;
+#endif
 }
 
 bool settings_get_output_delay(uint8_t output, uint16_t *delay) {
+#ifdef USE_OUTPUTS
     if (output >= OUTPUT_COUNT) {
         return false;
     }
 
     return settings_get_value(CV_OUTPUT_DELAY_BASE + output, delay);
+#else
+    return false;
+#endif
 }
 
 bool settings_has_output_delay(uint8_t output) {
+#ifdef USE_OUTPUTS
     uint16_t value = 0;
     if (settings_get_output_delay(output, &value) == false) {
         return false;
     }
 
     return value > 0;
+#else
+    return false;
+#endif
+}
+
+bool settings_get_input_address(uint8_t input, uint16_t *address) {
+#ifdef USE_INPUTS
+    if (input >= INPUT_COUNT) {
+        return false;
+    }
+
+    return settings_get_value(CV_INPUT_ADDRESS_BASE + input, address);
+#else
+    return false;
+#endif
+}
+
+bool settings_get_input_delay(uint8_t input, uint16_t *delay) {
+#ifdef USE_INPUTS
+    if (input >= INPUT_COUNT) {
+        return false;
+    }
+
+    return settings_get_value(CV_INPUT_ADDRESS_DELAY + input, delay);
+#else
+    return false;
+#endif
 }
 
 bool _is_valid_cv(uint16_t cv) {
@@ -162,6 +212,7 @@ bool _is_valid_cv(uint16_t cv) {
         return true;
     }
 
+#ifdef USE_OUTPUTS
     // output configurations
     if (cv >= CV_OUTPUT_TURN_ON_BASE && cv < CV_OUTPUT_TURN_ON_BASE + OUTPUT_COUNT) {
         return true;
@@ -182,6 +233,18 @@ bool _is_valid_cv(uint16_t cv) {
     if (cv >= CV_OUTPUT_DELAY_BASE && cv < CV_OUTPUT_DELAY_BASE + OUTPUT_COUNT) {
         return true;
     }
+#endif
+
+#ifdef USE_INPUTS
+    // input configurations
+    if (cv >= CV_INPUT_ADDRESS_BASE && cv < CV_INPUT_ADDRESS_BASE + INPUT_COUNT) {
+        return true;
+    }
+
+    if (cv >= CV_INPUT_ADDRESS_DELAY && cv < CV_INPUT_ADDRESS_DELAY + INPUT_COUNT) {
+        return true;
+    }
+#endif
 
     return false;
 }
@@ -190,6 +253,7 @@ bool _handle_programming_helper(uint16_t value) {
     uint8_t mode = value % 10;
     uint16_t parameter = value / 10;
 
+    // TODO: Move programming helper into custom boards?
     switch (mode) {
         // do nothing
         case 0:
