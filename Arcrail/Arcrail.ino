@@ -1,19 +1,21 @@
 #include "configuration.h"
 
+#include "inputs.h"
 #include "led.h"
-#include "loconet-bus.h"
 #include "outputs.h"
 #include "settings.h"
 #include "timer.h"
+
+#ifdef USE_LOCONET
+    #include "loconet-bus.h"
+#endif
 
 void setup() {
     led_init();
     timer_init();
     settings_init();
-
-#ifdef USE_OUTPUTS
     outputs_init();
-#endif
+    inputs_init();
 
 #ifdef USE_LOCONET
     loconet_init();
@@ -21,9 +23,8 @@ void setup() {
 }
 
 void loop() {
-#ifdef USE_OUTPUTS
     outputs_update();
-#endif
+    inputs_update();
 
 #ifdef USE_LOCONET
     loconet_update();

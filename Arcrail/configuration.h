@@ -29,6 +29,7 @@
 //======================== Firmware =========================================
 //===========================================================================
 
+// TODO: Improve firmware version format. Maybe something like 102 equals 1.02
 #ifndef FIRMWARE_VERSION
     #define FIRMWARE_VERSION 1
 #endif
@@ -76,11 +77,14 @@
         #error Output count is not defined
     #endif
 
+    // number of outputs is limited because of the settings layout
     #define OUTPUT_COUNT_MAX 20
 
     #if OUTPUT_COUNT > OUTPUT_COUNT_MAX
         #error Output count must not be greater than OUTPUT_COUNT_MAX
     #endif
+#else
+    #define OUTPUT_COUNT 0
 #endif
 
 //===========================================================================
@@ -91,6 +95,15 @@
     #ifndef INPUT_COUNT
         #error Input count is not defined
     #endif
+
+    // number of inputs is limited because of the settings layout
+    #define INPUT_COUNT_MAX 20
+
+    #if INPUT_COUNT > INPUT_COUNT_MAX
+        #error Input count must not be greater than INPUT_COUNT_MAX
+    #endif
+#else
+    #define INPUT_COUNT 0
 #endif
 
 //===========================================================================

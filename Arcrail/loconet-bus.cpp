@@ -2,8 +2,15 @@
 
 #include "configuration.h"
 #include "led.h"
-#include "outputs.h"
 #include "settings.h"
+
+#ifdef USE_OUTPUTS
+    #include "outputs.h"
+#endif
+
+#ifdef USE_INPUTS
+    #include "inputs.h"
+#endif
 
 #include <LocoNet.h>
 
@@ -33,22 +40,38 @@ void loconet_update() {
     }
 }
 
+void loconet_report_sensor(uint16_t address, uint8_t state) {
+    LocoNet.reportSensor(address, state);
+}
+
+void notifyPower(uint8_t state) {
+#ifdef USE_INPUTS
+    if (state) {
+        inputs_reset();
+    }
+#endif
+}
+
 void notifySwitchRequest(uint16_t address, uint8_t output, uint8_t direction) {
+#ifdef USE_OUTPUTS
     // only handle requests which turn on switches
     if (output == 0) {
         return;
     }
 
     outputs_parse(address, direction);
+#endif
 }
 
 void notifySwitchState(uint16_t address, uint8_t output, uint8_t direction) {
+#ifdef USE_OUTPUTS
     // only handle requests which turn on switches
     if (output == 0) {
         return;
     }
 
     outputs_parse(address, direction);
+#endif
 }
 
 void notifySwitchOutputsReport(uint16_t address, uint8_t closedOutput, uint8_t throwOutput) {
