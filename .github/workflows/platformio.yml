@@ -16,6 +16,7 @@ jobs:
 
         # Custom boards
         - loconet-accessory-decoder-rev-c
+        - loconet-accessory-decoder-rev-d
 
     steps:
 

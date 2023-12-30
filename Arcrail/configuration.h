@@ -8,20 +8,21 @@
 
 // uncomment the desired board in the following section or define a custom
 // board in the following section
+// #define BOARD_ARDUINO_UNO
 // #define BOARD_LOCONET_ACCESSORY_DECODER_REV_C
-#define BOARD_LOCONET_ACCESSORY_DECODER_REV_D
+// #define BOARD_LOCONET_ACCESSORY_DECODER_REV_D
 // #define BOARD_LOCONET_FEEDBACK_DECODER_REV_A
 
-#ifdef BOARD_LOCONET_ACCESSORY_DECODER_REV_C
+#ifdef BOARD_ARDUINO_UNO
+    #include "boards/arduino-uno.h"
+#elif BOARD_LOCONET_ACCESSORY_DECODER_REV_C
     #include "boards/loconet-accessory-decoder-rev-c.h"
-#endif
-
-#ifdef BOARD_LOCONET_ACCESSORY_DECODER_REV_D
+#elif BOARD_LOCONET_ACCESSORY_DECODER_REV_D
     #include "boards/loconet-accessory-decoder-rev-d.h"
-#endif
-
-#ifdef BOARD_LOCONET_FEEDBACK_DECODER_REV_A
+#elif BOARD_LOCONET_FEEDBACK_DECODER_REV_A
     #include "boards/loconet-feedback-decoder-rev-a.h"
+#else
+    #error No board defined
 #endif
 
 //===========================================================================
