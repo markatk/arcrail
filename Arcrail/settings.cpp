@@ -22,7 +22,6 @@ void settings_init() {
 
     settings_set_value(0, SETTINGS_DEFAULT_MODULE_VALUE);
     settings_set_value(1, SETTINGS_DEFAULT_MODE_VALUE);
-    settings_set_value(20, FIRMWARE_VERSION);
 }
 
 bool settings_set_value(uint16_t address, uint16_t value) {
@@ -42,6 +41,13 @@ bool settings_set_value(uint16_t address, uint16_t value) {
 }
 
 bool settings_get_value(uint16_t address, uint16_t *value) {
+    // special read-only CVs
+    if (address == 20) {
+        *value = FIRMWARE_VERSION;
+
+        return true;
+    }
+
     if (_is_valid_cv(address) == false) {
         return false;
     }
@@ -208,7 +214,7 @@ bool settings_get_input_delay(uint8_t input, uint16_t *delay) {
 
 bool _is_valid_cv(uint16_t cv) {
     // module address, programming helper and other various addresses
-    if (cv <= 1 || cv == 20) {
+    if (cv <= 1) {
         return true;
     }
 
