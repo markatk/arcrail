@@ -26,7 +26,6 @@
 #define OUTPUT_6 7
 #define OUTPUT_7 A0
 #define OUTPUT_8 A1
-
 #define OUTPUT_9 A2
 #define OUTPUT_10 A3
 #define OUTPUT_11 A4
