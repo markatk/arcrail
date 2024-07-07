@@ -18,6 +18,10 @@ jobs:
         - loconet-accessory-decoder-rev-c
         - loconet-accessory-decoder-rev-d
         - loconet-feedback-decoder-rev-a
+        - loconet-feedback-decoder-rev-a-168A
+        - loconet-feedback-decoder-rev-b
+        - loconet-feedback-decoder-rev-b-168A
+        - loconet-turnout-decoder-rev-a
 
     steps:
 
