@@ -12,15 +12,18 @@
 // #define BOARD_LOCONET_ACCESSORY_DECODER_REV_C
 // #define BOARD_LOCONET_ACCESSORY_DECODER_REV_D
 // #define BOARD_LOCONET_FEEDBACK_DECODER_REV_A
+// #define BOARD_LOCONET_FEEDBACK_DECODER_REV_B
 
 #ifdef BOARD_ARDUINO_UNO
     #include "boards/arduino-uno.h"
-#elif BOARD_LOCONET_ACCESSORY_DECODER_REV_C
+#elif defined BOARD_LOCONET_ACCESSORY_DECODER_REV_C
     #include "boards/loconet-accessory-decoder-rev-c.h"
-#elif BOARD_LOCONET_ACCESSORY_DECODER_REV_D
+#elif defined BOARD_LOCONET_ACCESSORY_DECODER_REV_D
     #include "boards/loconet-accessory-decoder-rev-d.h"
-#elif BOARD_LOCONET_FEEDBACK_DECODER_REV_A
+#elif defined BOARD_LOCONET_FEEDBACK_DECODER_REV_A
     #include "boards/loconet-feedback-decoder-rev-a.h"
+#elif defined BOARD_LOCONET_FEEDBACK_DECODER_REV_B
+    #include "boards/loconet-feedback-decoder-rev-b.h"
 #else
     #error No board defined
 #endif
