@@ -57,7 +57,7 @@ void outputs_update() {
 
             switch (_switching_mode[i]) {
                 case SWITCHING_MODE_TIME:
-                    write_output(i, LOW);
+                    write_output(i, HIGH);
 
                     break;
 
