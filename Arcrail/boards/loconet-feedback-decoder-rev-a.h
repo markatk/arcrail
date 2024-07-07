@@ -21,9 +21,9 @@
 #define INPUT_1 9
 #define INPUT_2 7
 #define INPUT_3 10
-#define INPUT_4 11
-#define INPUT_5 12
-#define INPUT_6 13
+#define INPUT_4 4
+#define INPUT_5 3
+#define INPUT_6 2
 #define INPUT_7 A0
 #define INPUT_8 A1
 
