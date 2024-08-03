@@ -2,6 +2,7 @@
 
 #include "configuration.h"
 #include "settings.h"
+#include "timer.h"
 
 #ifdef USE_LOCONET
     #include "loconet-bus.h"
@@ -26,6 +27,38 @@ void inputs_init() {
 }
 
 void inputs_update() {
+#ifdef USE_INPUTS
+    // wait till timer was triggered
+    if (timer_was_triggered() == false) {
+        return;
+    }
+
+    for (auto i = 0; i < INPUT_COUNT; i++) {
+        auto value = digitalRead(INPUTS[i]);
+        if (_states[i] != 0xFF && value == _states[i]) {
+            // decrease counter if it was counting because state did (maybe) not change
+            if (_state_counters[i] > 0) {
+                _state_counters[i] -= 1;
+            }
+
+            continue;
+        }
+
+        // increase and compare state change timer
+        _state_counters[i] += 1;
+
+        uint16_t input_delay;
+        if (settings_get_input_delay(i, &input_delay) == false || _state_counters[i] < input_delay) {
+            continue;
+        }
+
+        // state change was verified
+        _states[i] = value;
+        _state_counters[i] = 0;
+
+        send_state(i, value);
+    }
+#endif
 }
 
 void inputs_reset() {
