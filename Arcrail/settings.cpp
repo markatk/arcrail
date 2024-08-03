@@ -1,15 +1,8 @@
 #include "settings.h"
 
 #include "configuration.h"
+#include "cv.h"
 #include <EEPROM.h>
-
-#define CV_OUTPUT_TURN_ON_BASE 21
-#define CV_OUTPUT_TURN_OFF_BASE 41
-#define CV_SWITCHING_MODE_BASE 61
-#define CV_SWITCHING_2ND_PARAMETER_BASE 81
-#define CV_OUTPUT_DELAY_BASE 101
-#define CV_INPUT_ADDRESS_BASE 201
-#define CV_INPUT_ADDRESS_DELAY 221
 
 bool _is_valid_cv(uint16_t cv);
 bool _handle_programming_helper(uint16_t value);
