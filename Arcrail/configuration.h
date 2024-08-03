@@ -41,7 +41,7 @@
 // firmware version is a combination of major and minor version
 // for example 205 means 2.05
 #ifndef FIRMWARE_VERSION
-    #define FIRMWARE_VERSION 100
+    #define FIRMWARE_VERSION 101
 #endif
 
 //===========================================================================
