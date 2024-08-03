@@ -21,6 +21,7 @@ jobs:
         - loconet-feedback-decoder-rev-a-168A
         - loconet-feedback-decoder-rev-b
         - loconet-feedback-decoder-rev-b-168A
+        - loconet-feedback-decoder-rev-c
         - loconet-turnout-decoder-rev-a
 
     steps:
