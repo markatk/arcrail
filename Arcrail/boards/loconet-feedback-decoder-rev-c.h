@@ -1,21 +1,13 @@
-/*
-
- */
-
 #pragma once
 
-#include "Arduino.h"
+#include <Arduino.h>
 
 //===========================================================================
 //======================== Settings =========================================
 //===========================================================================
 
-#ifndef SETTINGS_DEFAULT_MODULE_VALUE
-    #define SETTINGS_DEFAULT_MODULE_VALUE 1
-#endif
-
 #ifndef SETTINGS_DEFAULT_MODE_VALUE
-    #define SETTINGS_DEFAULT_MODE_VALUE 1008
+    #define SETTINGS_DEFAULT_MODE_VALUE 971
 #endif
 
 //===========================================================================
@@ -34,9 +26,9 @@
 #define INPUT_COUNT 8
 #define INVERT_INPUTS
 
-#define INPUT_1 A5
-#define INPUT_2 A4
-#define INPUT_3 A3
+#define INPUT_1 19 // A5
+#define INPUT_2 18 // A4
+#define INPUT_3 17 // A3
 #define INPUT_4 4
 #define INPUT_5 3
 #define INPUT_6 2

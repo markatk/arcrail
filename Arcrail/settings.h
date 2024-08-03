@@ -28,3 +28,5 @@ bool settings_has_output_delay(uint8_t output);
 bool settings_get_input_address(uint8_t input, uint16_t *address);
 
 bool settings_get_input_delay(uint8_t input, uint16_t *delay);
+
+bool settings_on_programming_helper(uint8_t mode, uint16_t parameter);
