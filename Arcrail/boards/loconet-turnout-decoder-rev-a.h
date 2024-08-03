@@ -75,5 +75,5 @@ const uint8_t OUTPUTS[OUTPUT_COUNT] = {
 //===========================================================================
 
 #ifndef SETTINGS_DEFAULT_MODE_VALUE
-    #define SETTINGS_DEFAULT_MODE_VALUE 1012
+    #define SETTINGS_DEFAULT_MODE_VALUE 1011
 #endif

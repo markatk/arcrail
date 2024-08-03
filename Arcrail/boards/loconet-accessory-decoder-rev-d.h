@@ -69,3 +69,11 @@ const uint8_t OUTPUTS[OUTPUT_COUNT] = {
 
 #define STATUS_LED
 #define PIN_STATUS_LED 5
+
+//===========================================================================
+//======================== Settings =========================================
+//===========================================================================
+
+#ifndef SETTINGS_DEFAULT_MODE_VALUE
+    #define SETTINGS_DEFAULT_MODE_VALUE 1001
+#endif

@@ -75,7 +75,7 @@
 #endif
 
 #ifndef SETTINGS_DEFAULT_MODE_VALUE
-    #define SETTINGS_DEFAULT_MODE_VALUE 1001
+    #define SETTINGS_DEFAULT_MODE_VALUE 0
 #endif
 
 //===========================================================================

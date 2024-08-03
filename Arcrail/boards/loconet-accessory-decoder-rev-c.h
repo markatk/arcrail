@@ -61,3 +61,11 @@ const uint8_t OUTPUTS[OUTPUT_COUNT] = {
 
 #define STATUS_LED
 #define PIN_STATUS_LED 0 // TODO: Status LED is same pin as output 16
+
+//===========================================================================
+//======================== Settings =========================================
+//===========================================================================
+
+#ifndef SETTINGS_DEFAULT_MODE_VALUE
+    #define SETTINGS_DEFAULT_MODE_VALUE 1001
+#endif
