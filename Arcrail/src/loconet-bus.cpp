@@ -1,6 +1,6 @@
 #include "loconet-bus.h"
 
-#include "configuration.h"
+#include "../configuration.h"
 #include "led.h"
 #include "settings.h"
 

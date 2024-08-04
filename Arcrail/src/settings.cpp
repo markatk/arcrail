@@ -1,6 +1,6 @@
 #include "settings.h"
 
-#include "configuration.h"
+#include "../configuration.h"
 #include "cv.h"
 #include <EEPROM.h>
 

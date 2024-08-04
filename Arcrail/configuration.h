@@ -17,19 +17,19 @@
 // #define BOARD_LOCONET_TURNOUT_DECODER_REV_A
 
 #ifdef BOARD_ARDUINO_UNO
-    #include "boards/arduino-uno.h"
+    #include "src/boards/arduino-uno.h"
 #elif defined BOARD_LOCONET_ACCESSORY_DECODER_REV_C
-    #include "boards/loconet-accessory-decoder-rev-c.h"
+    #include "src/boards/loconet-accessory-decoder-rev-c.h"
 #elif defined BOARD_LOCONET_ACCESSORY_DECODER_REV_D
-    #include "boards/loconet-accessory-decoder-rev-d.h"
+    #include "src/boards/loconet-accessory-decoder-rev-d.h"
 #elif defined BOARD_LOCONET_FEEDBACK_DECODER_REV_A
-    #include "boards/loconet-feedback-decoder-rev-a.h"
+    #include "src/boards/loconet-feedback-decoder-rev-a.h"
 #elif defined BOARD_LOCONET_FEEDBACK_DECODER_REV_B
-    #include "boards/loconet-feedback-decoder-rev-b.h"
+    #include "src/boards/loconet-feedback-decoder-rev-b.h"
 #elif defined BOARD_LOCONET_FEEDBACK_DECODER_REV_C
-    #include "boards/loconet-feedback-decoder-rev-c.h"
+    #include "src/boards/loconet-feedback-decoder-rev-c.h"
 #elif defined BOARD_LOCONET_TURNOUT_DECODER_REV_A
-    #include "boards/loconet-turnout-decoder-rev-a.h"
+    #include "src/boards/loconet-turnout-decoder-rev-a.h"
 #else
     #error No board defined
 #endif

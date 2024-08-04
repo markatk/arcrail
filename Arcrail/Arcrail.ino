@@ -1,13 +1,13 @@
 #include "configuration.h"
 
-#include "inputs.h"
-#include "led.h"
-#include "outputs.h"
-#include "settings.h"
-#include "timer.h"
+#include "src/inputs.h"
+#include "src/led.h"
+#include "src/outputs.h"
+#include "src/settings.h"
+#include "src/timer.h"
 
 #ifdef USE_LOCONET
-    #include "loconet-bus.h"
+    #include "src/loconet-bus.h"
 #endif
 
 void setup() {
