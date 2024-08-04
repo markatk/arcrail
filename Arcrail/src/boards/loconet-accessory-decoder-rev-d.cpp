@@ -1,3 +1,5 @@
+#include "../../configuration.h"
+
 #ifdef BOARD_LOCONET_ACCESSORY_DECODER_REV_D
     #include "loconet-accessory-decoder-rev-d.h"
 

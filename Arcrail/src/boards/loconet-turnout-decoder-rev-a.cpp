@@ -1,3 +1,5 @@
+#include "../../configuration.h"
+
 #ifdef BOARD_LOCONET_TURNOUT_DECODER_REV_A
     #include "loconet-turnout-decoder-rev-a.h"
 
