@@ -1,8 +1,8 @@
 #ifdef BOARD_LOCONET_ACCESSORY_DECODER_REV_D
     #include "loconet-accessory-decoder-rev-d.h"
 
-    #include "cv.h"
-    #include "settings.h"
+    #include "../cv.h"
+    #include "../settings.h"
 
 bool settings_on_programming_helper(uint8_t mode, uint16_t parameter) {
     switch (mode) {

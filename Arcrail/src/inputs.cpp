@@ -1,6 +1,6 @@
 #include "inputs.h"
 
-#include "configuration.h"
+#include "../configuration.h"
 #include "settings.h"
 #include "timer.h"
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "configuration.h"
+#include "../configuration.h"
 
 #ifdef USE_OUTPUTS
     #define CV_OUTPUT_TURN_ON_BASE 21
