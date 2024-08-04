@@ -1,3 +1,5 @@
+#include "../../configuration.h"
+
 #ifdef BOARD_LOCONET_FEEDBACK_DECODER_REV_A
     #include "loconet-feedback-decoder-rev-a.h"
 
