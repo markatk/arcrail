@@ -15,6 +15,7 @@
 // #define BOARD_LOCONET_FEEDBACK_DECODER_REV_B
 // #define BOARD_LOCONET_FEEDBACK_DECODER_REV_C
 // #define BOARD_LOCONET_TURNOUT_DECODER_REV_A
+// #define BOARD_LCC_DEVELOPMENT_BOARD_REV_A
 
 #ifdef BOARD_ARDUINO_UNO
     #include "src/boards/arduino-uno.h"
@@ -30,6 +31,8 @@
     #include "src/boards/loconet-feedback-decoder-rev-c.h"
 #elif defined BOARD_LOCONET_TURNOUT_DECODER_REV_A
     #include "src/boards/loconet-turnout-decoder-rev-a.h"
+#elif defined BOARD_LCC_DEVELOPMENT_BOARD_REV_A
+    #include "src/boards/lcc-development-board-rev-a.h"
 #else
     #error No board defined
 #endif
