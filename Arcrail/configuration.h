@@ -15,7 +15,7 @@
 // #define BOARD_LOCONET_FEEDBACK_DECODER_REV_B
 // #define BOARD_LOCONET_FEEDBACK_DECODER_REV_C
 // #define BOARD_LOCONET_TURNOUT_DECODER_REV_A
-// #define BOARD_LCC_DEVELOPMENT_BOARD_REV_A
+#define BOARD_LCC_DEVELOPMENT_BOARD_REV_A
 
 #ifdef BOARD_ARDUINO_UNO
     #include "src/boards/arduino-uno.h"
@@ -66,8 +66,25 @@
 #endif
 
 //===========================================================================
+//======================== CAN ==============================================
+//===========================================================================
+
+#ifdef USE_CAN
+    #ifndef PIN_CAN_CS
+        #error CAN chip select pin is not defined
+    #endif
+#endif
+
+//===========================================================================
 //======================== LCC ==============================================
 //===========================================================================
+
+#ifdef USE_LCC
+    #ifndef USE_CAN
+        #define USE_CAN
+    #endif
+
+#endif
 
 //===========================================================================
 //======================== Settings =========================================

@@ -1,6 +1,7 @@
 #include "configuration.h"
 
 #include "src/buttons.h"
+#include "src/can-bus.h"
 #include "src/inputs.h"
 #include "src/led.h"
 #include "src/loconet-bus.h"
@@ -16,6 +17,7 @@ void setup() {
     inputs_init();
     buttons_init();
     loconet_init();
+    can_init();
 }
 
 void loop() {
@@ -26,5 +28,6 @@ void loop() {
     inputs_update();
     buttons_update();
     loconet_update();
+    can_update();
     led_update();
 }
