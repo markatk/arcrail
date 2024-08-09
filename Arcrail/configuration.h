@@ -73,6 +73,12 @@
     #ifndef PIN_CAN_CS
         #error CAN chip select pin is not defined
     #endif
+
+    #ifdef CAN_USE_MCP2515
+        #include "src/can/mcp2515.h"
+    #else
+        #error No can transfer module defined
+    #endif
 #endif
 
 //===========================================================================

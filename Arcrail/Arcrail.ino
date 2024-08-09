@@ -1,7 +1,7 @@
 #include "configuration.h"
 
 #include "src/buttons.h"
-#include "src/can-bus.h"
+#include "src/can/can.h"
 #include "src/inputs.h"
 #include "src/led.h"
 #include "src/loconet-bus.h"

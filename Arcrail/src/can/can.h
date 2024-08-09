@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../configuration.h"
+#include "../../configuration.h"
 
 void can_init();
 
