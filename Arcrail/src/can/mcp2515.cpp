@@ -57,6 +57,26 @@ void mcp2515_write(uint8_t address, uint8_t value) {
     _end_cmd();
 }
 
+uint8_t mcp2515_get_empty_transmit_buffer() {
+    // test each of the 3 transmit buffers
+    uint8_t status = mcp2515_read(MCP2515_TXB0_BASE + MCP2515_TXBxCTRL_OFFSET);
+    if ((status & MCP2515_TXBnCTRL_MASK_TXREQ) == 0) {
+        return MCP2515_TXB0_BASE;
+    }
+
+    status = mcp2515_read(MCP2515_TXB1_BASE + MCP2515_TXBxCTRL_OFFSET);
+    if ((status & MCP2515_TXBnCTRL_MASK_TXREQ) == 0) {
+        return MCP2515_TXB1_BASE;
+    }
+
+    status = mcp2515_read(MCP2515_TXB1_BASE + MCP2515_TXBxCTRL_OFFSET);
+    if ((status & MCP2515_TXBnCTRL_MASK_TXREQ) == 0) {
+        return MCP2515_TXB2_BASE;
+    }
+
+    return 0;
+}
+
 void _spi_select() {
     digitalWrite(PIN_CAN_CS, LOW);
 }
