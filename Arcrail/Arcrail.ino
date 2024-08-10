@@ -1,5 +1,6 @@
 #include "configuration.h"
 
+#include "src/buttons.h"
 #include "src/inputs.h"
 #include "src/led.h"
 #include "src/loconet-bus.h"
@@ -13,12 +14,14 @@ void setup() {
     settings_init();
     outputs_init();
     inputs_init();
+    buttons_init();
     loconet_init();
 }
 
 void loop() {
     outputs_update();
     inputs_update();
+    buttons_update();
     loconet_update();
     led_update();
 }
