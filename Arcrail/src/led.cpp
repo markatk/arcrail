@@ -4,6 +4,7 @@
 
 #define LED_MODE_OFF 0
 #define LED_MODE_BLINK 1
+#define LED_MODE_FLASH 2
 
 #ifdef USE_LEDS
 typedef struct {
@@ -75,6 +76,20 @@ void led_blink(uint8_t led) {
     write_led(&_leds[led], HIGH);
 }
 
+void led_flash(uint8_t led) {
+    if (led >= LED_COUNT) {
+        return;
+    }
+
+    _leds[led].time = 1;
+    _leds[led].mode = LED_MODE_FLASH;
+
+    // set initial delay value
+    _leds[led].delay = _leds[led].time;
+
+    write_led(&_leds[led], HIGH);
+}
+
     #ifdef STATUS_LED
 void status_led_set(uint8_t value) {
     led_set(STATUS_LED, value);
@@ -105,6 +120,15 @@ void update_led(led_t *led) {
             toggle_led(led);
 
             led->delay = led->time;
+        }
+    } else if (led->mode == LED_MODE_FLASH) {
+        // wait till the delay is over
+        if (led->delay > 0) {
+            led->delay -= 1;
+        } else {
+            write_led(led, LOW);
+
+            led->mode = LED_MODE_OFF;
         }
     }
 }
