@@ -3,6 +3,7 @@
 #include "src/buttons.h"
 #include "src/can/can.h"
 #include "src/inputs.h"
+#include "src/lcc/lcc.h"
 #include "src/led.h"
 #include "src/loconet-bus.h"
 #include "src/outputs.h"
@@ -18,6 +19,7 @@ void setup() {
     buttons_init();
     loconet_init();
     can_init();
+    lcc_init();
 }
 
 void loop() {
@@ -29,5 +31,6 @@ void loop() {
     buttons_update();
     loconet_update();
     can_update();
+    lcc_update();
     led_update();
 }
