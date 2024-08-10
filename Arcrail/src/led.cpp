@@ -53,6 +53,14 @@ void led_set(uint8_t led, uint8_t value) {
     _leds[led].mode = LED_MODE_OFF;
 }
 
+void led_toggle(uint8_t led) {
+    if (led >= LED_COUNT) {
+        return;
+    }
+
+    toggle_led(&_leds[led]);
+}
+
 void led_blink(uint8_t led) {
     if (led >= LED_COUNT) {
         return;
