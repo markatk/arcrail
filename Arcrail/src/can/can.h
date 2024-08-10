@@ -10,3 +10,5 @@ void can_init();
 void can_update();
 
 uint8_t can_send_message(uint32_t identifier, uint8_t length, uint8_t *data);
+
+void can_on_message_received(uint32_t identifier, uint8_t length, uint8_t *data);

@@ -74,6 +74,9 @@
         #error CAN chip select pin is not defined
     #endif
 
+// #define PIN_CAN_RESET
+// #define CAN_INVERT_RESET
+
     #ifdef CAN_USE_MCP2515
         #include "src/can/mcp2515.h"
     #else
