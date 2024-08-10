@@ -49,12 +49,38 @@ uint8_t mcp2515_read(uint8_t address) {
     return value;
 }
 
+void mcp2515_read(uint8_t address, uint8_t length, uint8_t *data) {
+    _begin_cmd();
+
+    SPI.transfer(0x03);
+    SPI.transfer(address);
+
+    for (uint8_t i = 0; i < length; i++) {
+        data[i] = SPI.transfer(0xFF); // send data is ignored
+    }
+
+    _end_cmd();
+}
+
 void mcp2515_write(uint8_t address, uint8_t value) {
     _begin_cmd();
 
     SPI.transfer(0x02);
     SPI.transfer(address);
     SPI.transfer(value);
+
+    _end_cmd();
+}
+
+void mcp2515_write(uint8_t address, uint8_t length, uint8_t *data) {
+    _begin_cmd();
+
+    SPI.transfer(0x02);
+    SPI.transfer(address);
+
+    for (uint8_t i = 0; i < length; i++) {
+        SPI.transfer(data[i]);
+    }
 
     _end_cmd();
 }
