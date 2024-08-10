@@ -124,14 +124,9 @@
     #ifndef LED_COUNT
         #error LED count is not defined
     #endif
-#endif
 
-#ifdef STATUS_LED
-    #ifndef PIN_STATUS_LED
-        #error Status led pin is not defined
-    #endif
-
-// #define STATUS_LED_INVERT_OUTPUT
+// index in the LEDS array NOT the pin number
+// #define STATUS_LED 0
 #endif
 
 //===========================================================================
