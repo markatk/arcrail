@@ -144,6 +144,9 @@
     #ifndef BUTTON_COUNT
         #error Button count is not defined
     #endif
+
+// #define BUTTONS_INVERT
+// #define BUTTONS_INTERNAL_PULLUP
 #else
     #define BUTTON_COUNT 0
 #endif

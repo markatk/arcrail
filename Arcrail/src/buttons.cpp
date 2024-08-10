@@ -65,7 +65,11 @@ bool button_is_released(uint8_t button) {
 
 void _initialize_button(button_t *button, uint8_t pin) {
     // setup pin
+    #ifdef BUTTONS_INTERNAL_PULLUP
     pinMode(pin, INPUT_PULLUP);
+    #else
+    pinMode(pin, INPUT);
+    #endif
 
     button->pin = pin;
     button->pressed = false;
