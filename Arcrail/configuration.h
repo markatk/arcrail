@@ -120,6 +120,12 @@
 //======================== LEDs =============================================
 //===========================================================================
 
+#ifdef USE_LEDS
+    #ifndef LED_COUNT
+        #error LED count is not defined
+    #endif
+#endif
+
 #ifdef STATUS_LED
     #ifndef PIN_STATUS_LED
         #error Status led pin is not defined
