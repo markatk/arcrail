@@ -120,7 +120,7 @@ void _handle_message(uint8_t base_address) {
     identifier |= _receive_buffer[0] << 3 | _receive_buffer[1] >> 5;
 
     // check if message contains extended frame
-    if ((_receive_buffer[1] & 0x80) != 0) {
+    if ((_receive_buffer[1] & 0x08) != 0) {
         identifier |= (uint32_t)(_receive_buffer[1] & 0x03) << 27 | (uint32_t)_receive_buffer[2] << 19 | (uint32_t)_receive_buffer[3] << 11;
     }
 
