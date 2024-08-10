@@ -24,6 +24,7 @@ void timer_init() {
 }
 
 bool timer_was_triggered() {
+    // TODO: Prevent multiple calls in the same loop iteration to reduce count
     if (_trigger_count == 0) {
         return false;
     }
