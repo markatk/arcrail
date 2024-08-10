@@ -132,10 +132,18 @@
 //======================== Buttons ==========================================
 //===========================================================================
 
-#ifndef BUTTON_PRESS_COUNT
-    #define BUTTON_PRESS_COUNT 200
-#endif
+#ifdef USE_BUTTONS
+    #ifndef BUTTON_PRESS_COUNT
+        #define BUTTON_PRESS_COUNT 200
+    #endif
 
-#ifndef BUTTON_RELEASE_COUNT
-    #define BUTTON_RELEASE_COUNT 20
+    #ifndef BUTTON_RELEASE_COUNT
+        #define BUTTON_RELEASE_COUNT 20
+    #endif
+
+    #ifndef BUTTON_COUNT
+        #error Button count is not defined
+    #endif
+#else
+    #define BUTTON_COUNT 0
 #endif
