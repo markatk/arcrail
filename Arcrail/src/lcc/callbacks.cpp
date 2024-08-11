@@ -18,5 +18,14 @@ __attribute__((weak)) void lcc_on_alias_map_enquiry(uint16_t source_nid, uint8_t
 __attribute__((weak)) void lcc_on_alias_map_reset(uint16_t source_nid, uint8_t *full_node_id) {
 }
 
-__attribute__((weak)) void lcc_on_message(uint16_t content_field, uint16_t source_nid, uint8_t length, uint8_t *data) {
+__attribute__((weak)) void lcc_on_message(uint16_t mti, uint16_t source_nid, uint8_t length, uint8_t *data) {
+}
+
+__attribute__((weak)) void lcc_on_initialization_complete(uint16_t source_nid, uint8_t *full_node_id) {
+}
+
+__attribute__((weak)) void lcc_on_verify_node_id(uint8_t length, uint8_t *full_node_id) {
+}
+
+__attribute__((weak)) void lcc_on_verified_node_id(uint8_t *full_node_id, bool simple_set) {
 }

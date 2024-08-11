@@ -4,41 +4,43 @@
     #include "../can/can.h"
     #include "callbacks.h"
     #include "data_link.h"
-
-void process_message(uint16_t content_field, uint16_t source_nid, uint8_t length, uint8_t *data);
+    #include "mti.h"
+    #include "network.h"
 #endif
 
 void lcc_init() {
+    data_link_init();
+    network_init();
+
     lcc_reset();
 }
 
 void lcc_update() {
     data_link_update();
+    network_update();
 }
 
 void lcc_reset() {
     data_link_reset();
+    network_reset();
 }
 
-#ifdef USE_LCC
-void can_on_message_received(uint32_t identifier, uint8_t length, uint8_t *data) {
-    // msb must be set for lcc messages
-    if ((identifier & 0x10000000) == 0) {
-        return;
+uint8_t lcc_get_state() {
+    if (data_link_get_state() != DATA_LINK_STATE_PERMITTED) {
+        return LCC_STATE_UNINITIALIZED;
     }
 
-    uint16_t content_field = (identifier & 0x07FFF000) >> 12;
-    uint16_t source_nid = identifier & 0x0FFF;
-
-    // handle can control or lcc messages
-    if ((identifier & 0x08000000) == 0) {
-        data_link_process_message(content_field, source_nid, length, data);
-    } else {
-        process_message(content_field, source_nid, length, data);
+    if (network_get_state() != NETWORK_STATE_INITIALIZED) {
+        return LCC_STATE_DATA_LINK_INITIALIZED;
     }
+
+    return LCC_STATE_NETWORK_INITIALIZED;
 }
 
-void process_message(uint16_t content_field, uint16_t source_nid, uint8_t length, uint8_t *data) {
-    lcc_on_message(content_field, source_nid, length, data);
+uint8_t lcc_verify_node_id_addressed(uint8_t *node_id) {
+    return data_link_send(MTI_VERIFY_NODE_ID_ADDRESSED, NODE_ID_LENGTH, node_id);
 }
-#endif
+
+uint8_t lcc_verify_node_id_global() {
+    return data_link_send(MTI_VERIFY_NODE_ID_GLOBAL, 0, 0);
+}

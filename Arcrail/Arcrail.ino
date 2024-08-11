@@ -37,13 +37,30 @@ void loop() {
     can_update();
     lcc_update();
     led_update();
+
+    if (button_is_just_pressed(0)) {
+        lcc_verify_node_id_global();
+    }
+
+    // display lcc state with leds
+    if (led_get(1) == false && lcc_get_state() >= LCC_STATE_DATA_LINK_INITIALIZED) {
+        led_set(1, true);
+    } else if (led_get(1) && lcc_get_state() < LCC_STATE_DATA_LINK_INITIALIZED) {
+        led_set(1, false);
+    }
+
+    if (led_get(2) == false && lcc_get_state() >= LCC_STATE_NETWORK_INITIALIZED) {
+        led_set(2, true);
+    } else if (led_get(2) && lcc_get_state() < LCC_STATE_NETWORK_INITIALIZED) {
+        led_set(2, false);
+    }
 }
 
-void lcc_on_message(uint16_t content_field, uint16_t source_nid, uint8_t length, uint8_t *data) {
+void lcc_on_message(uint16_t mti, uint16_t source_nid, uint8_t length, uint8_t *data) {
     led_flash(2);
 
-    Serial.print("LCC: content_field=");
-    Serial.print(content_field, HEX);
+    Serial.print("LCC: mti=");
+    Serial.print(mti, HEX);
     Serial.print(", source_nid=");
     Serial.print(source_nid, HEX);
     Serial.print(", data=");
@@ -72,4 +89,40 @@ void lcc_on_alias_map_definition(uint16_t source_nid, uint8_t *full_node_id) {
     }
 
     Serial.println();
+}
+
+void lcc_on_initialization_complete(uint16_t source_nid, uint8_t *full_node_id) {
+    Serial.print("LCC init complete: source_nid=");
+    Serial.print(source_nid, HEX);
+    Serial.print(", full_node_id=");
+
+    for (uint8_t i = 0; i < NODE_ID_LENGTH; i++) {
+        Serial.print(full_node_id[i]);
+        Serial.print(" ");
+    }
+
+    Serial.println();
+}
+
+void lcc_on_verify_node_id(uint8_t length, uint8_t *full_node_id) {
+    Serial.print("LCC verify node id: full_node_id=");
+
+    for (uint8_t i = 0; i < length; i++) {
+        Serial.print(full_node_id[i]);
+        Serial.print(" ");
+    }
+
+    Serial.println();
+}
+
+void lcc_on_verified_node_id(uint8_t *full_node_id, bool simple_set) {
+    Serial.print("LCC verified node id: full_node_id=");
+
+    for (uint8_t i = 0; i < NODE_ID_LENGTH; i++) {
+        Serial.print(full_node_id[i]);
+        Serial.print(" ");
+    }
+
+    Serial.print(", simple_set=");
+    Serial.println(simple_set);
 }

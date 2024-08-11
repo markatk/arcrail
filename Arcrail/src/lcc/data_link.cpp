@@ -4,6 +4,7 @@
     #include "../can/can.h"
     #include "../timer.h"
     #include "callbacks.h"
+    #include "network.h"
     #include "prgn.h"
 
     #define CHECK_ID_ALIAS_STATE_OFF 0x0
@@ -22,6 +23,7 @@ uint8_t _check_id_alias_state;
 uint16_t _node_id_alias;
 
 uint8_t _send_can_control_message(uint16_t content_field, uint8_t length, uint8_t *data);
+void _process_message(uint16_t content_field, uint16_t source_nid, uint8_t length, uint8_t *data);
 
 void data_link_init() {
 }
@@ -89,7 +91,38 @@ uint16_t data_link_get_alias() {
     return _node_id_alias;
 }
 
-void data_link_process_message(uint16_t content_field, uint16_t source_nid, uint8_t length, uint8_t *data) {
+uint8_t data_link_send(uint16_t mti, uint8_t length, uint8_t *data) {
+    uint32_t identifier = 0x19000000 | ((uint32_t)mti & 0x0FFF) << 12 | _node_id_alias;
+
+    return can_send_message(identifier, length, data);
+}
+
+void can_on_message_received(uint32_t identifier, uint8_t length, uint8_t *data) {
+    // msb must be set for lcc messages
+    if ((identifier & 0x10000000) == 0) {
+        return;
+    }
+
+    uint16_t content_field = (identifier & 0x07FFF000) >> 12;
+    uint16_t source_nid = identifier & 0x0FFF;
+
+    // handle can control or lcc messages
+    if ((identifier & 0x08000000) == 0) {
+        _process_message(content_field, source_nid, length, data);
+    } else if ((content_field & 0x7000) == 0x1000) {
+        uint16_t mti = content_field & 0x0FFF;
+
+        network_process_message(mti, source_nid, length, data);
+    }
+}
+
+uint8_t _send_can_control_message(uint16_t content_field, uint8_t length, uint8_t *data) {
+    uint32_t identifier = 0x10000000 | ((uint32_t)content_field) << 12 | _node_id_alias;
+
+    return can_send_message(identifier, length, data);
+}
+
+void _process_message(uint16_t content_field, uint16_t source_nid, uint8_t length, uint8_t *data) {
     // if in check node id alias process and same the tested alias
     if (_check_id_alias_state != CHECK_ID_ALIAS_STATE_OFF && source_nid == _node_id_alias) {
         // restart check process with new alias
@@ -131,11 +164,5 @@ void data_link_process_message(uint16_t content_field, uint16_t source_nid, uint
         default:
             break;
     }
-}
-
-uint8_t _send_can_control_message(uint16_t content_field, uint8_t length, uint8_t *data) {
-    uint32_t identifier = 0x10000000 | ((uint32_t)content_field) << 12 | _node_id_alias;
-
-    return can_send_message(identifier, length, data);
 }
 #endif
