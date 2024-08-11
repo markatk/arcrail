@@ -92,10 +92,6 @@
     #ifndef USE_CAN
         #error CAN is required to use LCC
     #endif
-
-    #ifndef LCC_UNIQUE_IDENTIFIER
-        #error LCC unique identifier is not defined
-    #endif
 #endif
 
 //===========================================================================
