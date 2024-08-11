@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Arduino.h>
+#include "../configuration.h"
 
 #define SWITCHING_MODE_OFF 0
 #define SWITCHING_MODE_TIME 1
@@ -28,5 +28,11 @@ bool settings_has_output_delay(uint8_t output);
 bool settings_get_input_address(uint8_t input, uint16_t *address);
 
 bool settings_get_input_delay(uint8_t input, uint16_t *delay);
+
+#ifdef USE_LCC
+bool settings_set_lcc_node_id(uint8_t *node_id);
+
+uint8_t *settings_get_lcc_node_id();
+#endif
 
 bool settings_on_programming_helper(uint8_t mode, uint16_t parameter);

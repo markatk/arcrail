@@ -1,9 +1,11 @@
 #include "network.h"
 
 #ifdef USE_LCC
+    #include "../settings.h"
     #include "callbacks.h"
     #include "data_link.h"
     #include "mti.h"
+
 uint8_t _state;
 
 bool _compare_node_id(uint8_t *in);
@@ -20,7 +22,7 @@ void network_update() {
 
     // switch to initialized state
     if (data_link_get_state() == DATA_LINK_STATE_PERMITTED) {
-        if (data_link_send(MTI_INITIALIZATION_COMPLETE_SIMPLE_SET, NODE_ID_LENGTH, (uint8_t *)LCC_UNIQUE_IDENTIFIER) == DATA_LINK_OK) {
+        if (data_link_send(MTI_INITIALIZATION_COMPLETE_SIMPLE_SET, NODE_ID_LENGTH, settings_get_lcc_node_id()) == DATA_LINK_OK) {
             _state = NETWORK_STATE_INITIALIZED;
         }
     }
@@ -75,8 +77,10 @@ void network_process_message(uint16_t mti, uint16_t source_nid, uint8_t length, 
 }
 
 bool _compare_node_id(uint8_t *in) {
+    uint8_t *node_id = settings_get_lcc_node_id();
+
     for (uint8_t i = 0; i < NODE_ID_LENGTH; i++) {
-        if (LCC_UNIQUE_IDENTIFIER[i] != in[i]) {
+        if (node_id[i] != in[i]) {
             return false;
         }
     }
@@ -87,6 +91,6 @@ bool _compare_node_id(uint8_t *in) {
 void _send_verified_node_id() {
     // TODO: Ensure message is send
     // TODO: Support full protocol
-    data_link_send(MTI_VERIFIED_NODE_ID_SIMPLE_SET, NODE_ID_LENGTH, (uint8_t *)LCC_UNIQUE_IDENTIFIER);
+    data_link_send(MTI_VERIFIED_NODE_ID_SIMPLE_SET, NODE_ID_LENGTH, settings_get_lcc_node_id());
 }
 #endif

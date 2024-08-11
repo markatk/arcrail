@@ -16,3 +16,9 @@
     #define CV_INPUT_ADDRESS_BASE 201
     #define CV_INPUT_ADDRESS_DELAY 221
 #endif
+
+#ifdef USE_LCC
+    #define CV_LCC_NODE_ID_0_1 2
+    #define CV_LCC_NODE_ID_2_3 3
+    #define CV_LCC_NODE_ID_4_5 4
+#endif

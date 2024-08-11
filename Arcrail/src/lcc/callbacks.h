@@ -2,6 +2,7 @@
 
 #include "../../configuration.h"
 
+// TODO: Rename to LCC_NODE_ID_LENGTH
 #define NODE_ID_LENGTH 6
 
 // data link layer

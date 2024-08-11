@@ -4,12 +4,25 @@
 #include "cv.h"
 #include <EEPROM.h>
 
+#ifdef USE_LCC
+    #include "lcc/lcc.h"
+
+uint8_t _lcc_node_id[6];
+
+void _load_lcc_node_id();
+#endif
+
 bool _is_valid_cv(uint16_t cv);
 bool _handle_programming_helper(uint16_t value);
 
 void settings_init() {
     // check if initial configuration has to be set
     if (EEPROM.read(CV_FIRMWARE * 2) != 0xFF && EEPROM.read(CV_FIRMWARE * 2 + 1) != 0xFF) {
+// load some data into memory
+#ifdef USE_LCC
+        _load_lcc_node_id();
+#endif
+
         return;
     }
 
@@ -32,6 +45,17 @@ void settings_init() {
         settings_set_value(CV_SWITCHING_2ND_PARAMETER_BASE + i, 0);
         settings_set_value(CV_OUTPUT_DELAY_BASE + i, 0);
     }
+#endif
+
+#ifdef USE_LCC
+    _lcc_node_id[0] = LCC_DEFAULT_NODE_ID_0;
+    _lcc_node_id[1] = LCC_DEFAULT_NODE_ID_1;
+    _lcc_node_id[2] = LCC_DEFAULT_NODE_ID_2;
+    _lcc_node_id[3] = LCC_DEFAULT_NODE_ID_3;
+    _lcc_node_id[4] = LCC_DEFAULT_NODE_ID_4;
+    _lcc_node_id[5] = 0x2;
+
+    settings_set_lcc_node_id(_lcc_node_id);
 #endif
 }
 
@@ -216,14 +240,47 @@ bool settings_get_input_delay(uint8_t input, uint16_t *delay) {
 #endif
 }
 
+#ifdef USE_LCC
+bool settings_set_lcc_node_id(uint8_t *node_id) {
+    for (uint8_t i = 0; i < NODE_ID_LENGTH; i++) {
+        _lcc_node_id[i] = node_id[i];
+    }
+
+    // update node id in permanent storage
+    if (settings_set_value(CV_LCC_NODE_ID_0_1, (uint16_t)_lcc_node_id[0] << 8 | _lcc_node_id[1]) == false) {
+        return false;
+    }
+
+    if (settings_set_value(CV_LCC_NODE_ID_2_3, (uint16_t)_lcc_node_id[2] << 8 | _lcc_node_id[3]) == false) {
+        return false;
+    }
+
+    if (settings_set_value(CV_LCC_NODE_ID_4_5, (uint16_t)_lcc_node_id[4] << 8 | _lcc_node_id[5]) == false) {
+        return false;
+    }
+
+    return true;
+}
+
+uint8_t *settings_get_lcc_node_id() {
+    return _lcc_node_id;
+}
+#endif
+
 __attribute__((weak)) bool settings_on_programming_helper(uint8_t mode, uint16_t parameter) {
     return false;
 }
 
 bool _is_valid_cv(uint16_t cv) {
-    // module address, programming helper and other various addresses
+// module address, programming helper and other various addresses
 #ifdef USE_LOCONET
     if (cv <= 1) {
+        return true;
+    }
+#endif
+
+#ifdef USE_LCC
+    if (cv >= CV_LCC_NODE_ID_0_1 && cv <= CV_LCC_NODE_ID_4_5) {
         return true;
     }
 #endif
@@ -276,3 +333,21 @@ bool _handle_programming_helper(uint16_t value) {
 
     return settings_on_programming_helper(mode, parameter);
 }
+
+#ifdef USE_LCC
+void _load_lcc_node_id() {
+    uint16_t value;
+
+    settings_get_value(CV_LCC_NODE_ID_0_1, &value);
+    _lcc_node_id[0] = value >> 8;
+    _lcc_node_id[1] = value;
+
+    settings_get_value(CV_LCC_NODE_ID_2_3, &value);
+    _lcc_node_id[2] = value >> 8;
+    _lcc_node_id[3] = value;
+
+    settings_get_value(CV_LCC_NODE_ID_4_5, &value);
+    _lcc_node_id[4] = value >> 8;
+    _lcc_node_id[5] = value;
+}
+#endif

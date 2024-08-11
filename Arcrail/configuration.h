@@ -92,6 +92,10 @@
     #ifndef USE_CAN
         #error CAN is required to use LCC
     #endif
+
+    #if !defined(LCC_DEFAULT_NODE_ID_0) || !defined(LCC_DEFAULT_NODE_ID_1) || !defined(LCC_DEFAULT_NODE_ID_2) || !defined(LCC_DEFAULT_NODE_ID_3) || !defined(LCC_DEFAULT_NODE_ID_4) || !defined(LCC_DEFAULT_NODE_ID_5)
+        #error Default LCC node id is not defined
+    #endif
 #endif
 
 //===========================================================================

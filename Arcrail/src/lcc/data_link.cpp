@@ -2,6 +2,7 @@
 
 #ifdef USE_LCC
     #include "../can/can.h"
+    #include "../settings.h"
     #include "../timer.h"
     #include "callbacks.h"
     #include "network.h"
@@ -38,14 +39,16 @@ void data_link_update() {
     if (_check_id_alias_state >= CHECK_ID_ALIAS_STATE_4 && _check_id_alias_state <= CHECK_ID_ALIAS_STATE_1) {
         uint16_t content_field = (uint16_t)_check_id_alias_state << 12;
 
+        uint8_t *node_id = settings_get_lcc_node_id();
+
         if (_check_id_alias_state == CHECK_ID_ALIAS_STATE_1) {
-            content_field |= ((uint16_t)LCC_UNIQUE_IDENTIFIER[0]) << 4 | LCC_UNIQUE_IDENTIFIER[1] >> 4;
+            content_field |= ((uint16_t)node_id[0]) << 4 | node_id[1] >> 4;
         } else if (_check_id_alias_state == CHECK_ID_ALIAS_STATE_2) {
-            content_field |= ((uint16_t)(LCC_UNIQUE_IDENTIFIER[1] & 0x0F)) << 8 | LCC_UNIQUE_IDENTIFIER[2];
+            content_field |= ((uint16_t)(node_id[1] & 0x0F)) << 8 | node_id[2];
         } else if (_check_id_alias_state == CHECK_ID_ALIAS_STATE_3) {
-            content_field |= ((uint16_t)LCC_UNIQUE_IDENTIFIER[3]) << 4 | LCC_UNIQUE_IDENTIFIER[4] >> 4;
+            content_field |= ((uint16_t)node_id[3]) << 4 | node_id[4] >> 4;
         } else if (_check_id_alias_state == CHECK_ID_ALIAS_STATE_4) {
-            content_field |= ((uint16_t)(LCC_UNIQUE_IDENTIFIER[4] & 0x0F)) << 8 | LCC_UNIQUE_IDENTIFIER[5];
+            content_field |= ((uint16_t)(node_id[4] & 0x0F)) << 8 | node_id[5];
         }
 
         if (_send_can_control_message(content_field, 0, 0) == CAN_OK) {
@@ -63,7 +66,7 @@ void data_link_update() {
         }
     } else {
         // transmit to permitted state by sending an alias map definition can control message
-        if (_send_can_control_message(CAN_CONTROL_ALIAS_MAP_DEFINITION, 6, (uint8_t *)LCC_UNIQUE_IDENTIFIER) == CAN_OK) {
+        if (_send_can_control_message(CAN_CONTROL_ALIAS_MAP_DEFINITION, 6, settings_get_lcc_node_id()) == CAN_OK) {
             _data_link_state = DATA_LINK_STATE_PERMITTED;
         }
     }
@@ -72,7 +75,7 @@ void data_link_update() {
 void data_link_reset() {
     _data_link_state = DATA_LINK_STATE_INHIBITED;
 
-    prgn_load_node_id((uint8_t *)LCC_UNIQUE_IDENTIFIER);
+    prgn_load_node_id(settings_get_lcc_node_id());
 
     _node_id_alias = prgn_get_alias();
     _check_id_alias_state = CHECK_ID_ALIAS_STATE_1;
