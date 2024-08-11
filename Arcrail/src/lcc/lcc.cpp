@@ -9,22 +9,29 @@
 #endif
 
 void lcc_init() {
+#ifdef USE_LCC
     data_link_init();
     network_init();
+#endif
 
     lcc_reset();
 }
 
 void lcc_update() {
+#ifdef USE_LCC
     data_link_update();
     network_update();
+#endif
 }
 
 void lcc_reset() {
+#ifdef USE_LCC
     data_link_reset();
     network_reset();
+#endif
 }
 
+#ifdef USE_LCC
 uint8_t lcc_get_state() {
     if (data_link_get_state() != DATA_LINK_STATE_PERMITTED) {
         return LCC_STATE_UNINITIALIZED;
@@ -44,3 +51,4 @@ uint8_t lcc_verify_node_id_addressed(uint8_t *node_id) {
 uint8_t lcc_verify_node_id_global() {
     return data_link_send(MTI_VERIFY_NODE_ID_GLOBAL, 0, 0);
 }
+#endif

@@ -13,8 +13,10 @@ void lcc_update();
 
 void lcc_reset();
 
+#ifdef USE_LCC
 uint8_t lcc_get_state();
 
 uint8_t lcc_verify_node_id_addressed(uint8_t *node_id);
 
 uint8_t lcc_verify_node_id_global();
+#endif

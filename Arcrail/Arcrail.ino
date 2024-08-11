@@ -11,7 +11,9 @@
 #include "src/timer.h"
 
 void setup() {
+#ifdef BOARD_LCC_DEVELOPMENT_BOARD_REV_A
     Serial.begin(9600);
+#endif
 
     led_init();
     timer_init();
@@ -23,7 +25,18 @@ void setup() {
     can_init();
     lcc_init();
 
+#ifdef BOARD_LCC_DEVELOPMENT_BOARD_REV_A
     led_blink(0);
+
+    uint8_t *node_id = settings_get_lcc_node_id();
+
+    for (uint8_t i = 0; i < NODE_ID_LENGTH; i++) {
+        Serial.print(node_id[i], HEX);
+        Serial.print(" ");
+    }
+
+    Serial.println();
+#endif
 }
 
 void loop() {
@@ -38,6 +51,7 @@ void loop() {
     lcc_update();
     led_update();
 
+#ifdef BOARD_LCC_DEVELOPMENT_BOARD_REV_A
     if (button_is_just_pressed(0)) {
         lcc_verify_node_id_global();
     }
@@ -54,8 +68,10 @@ void loop() {
     } else if (led_get(2) && lcc_get_state() < LCC_STATE_NETWORK_INITIALIZED) {
         led_set(2, false);
     }
+#endif
 }
 
+#ifdef BOARD_LCC_DEVELOPMENT_BOARD_REV_A
 void lcc_on_message(uint16_t mti, uint16_t source_nid, uint8_t length, uint8_t *data) {
     led_flash(2);
 
@@ -126,3 +142,4 @@ void lcc_on_verified_node_id(uint8_t *full_node_id, bool simple_set) {
     Serial.print(", simple_set=");
     Serial.println(simple_set);
 }
+#endif
