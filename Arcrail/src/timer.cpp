@@ -8,6 +8,7 @@
 
 uint8_t _trigger_count;
 uint8_t _timer_count;
+bool _was_triggered;
 
 void timer_init() {
     _trigger_count = 0;
@@ -23,15 +24,19 @@ void timer_init() {
 #endif
 }
 
-bool timer_was_triggered() {
-    // TODO: Prevent multiple calls in the same loop iteration to reduce count
+void timer_update() {
     if (_trigger_count == 0) {
-        return false;
+        _was_triggered = false;
+
+        return;
     }
 
     _trigger_count--;
+    _was_triggered = true;
+}
 
-    return true;
+bool timer_was_triggered() {
+    return _was_triggered;
 }
 
 SIGNAL(TIMER0_COMPA_vect) {
