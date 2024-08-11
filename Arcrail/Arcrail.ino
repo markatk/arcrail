@@ -74,7 +74,7 @@ void lcc_on_message(uint16_t mti, uint16_t source_nid, uint8_t length, uint8_t *
 }
 
 void lcc_on_reserve_id(uint16_t source_nid) {
-    Serial.print("LCC reserve id: source_nid=");
+    Serial.print("LCC rid: source_nid=");
     Serial.println(source_nid, HEX);
 }
 
@@ -84,7 +84,7 @@ void lcc_on_alias_map_definition(uint16_t source_nid, uint8_t *full_node_id) {
     Serial.print(", full_node_id=");
 
     for (uint8_t i = 0; i < NODE_ID_LENGTH; i++) {
-        Serial.print(full_node_id[i]);
+        Serial.print(full_node_id[i], HEX);
         Serial.print(" ");
     }
 
@@ -97,7 +97,7 @@ void lcc_on_initialization_complete(uint16_t source_nid, uint8_t *full_node_id) 
     Serial.print(", full_node_id=");
 
     for (uint8_t i = 0; i < NODE_ID_LENGTH; i++) {
-        Serial.print(full_node_id[i]);
+        Serial.print(full_node_id[i], HEX);
         Serial.print(" ");
     }
 
@@ -108,7 +108,7 @@ void lcc_on_verify_node_id(uint8_t length, uint8_t *full_node_id) {
     Serial.print("LCC verify node id: full_node_id=");
 
     for (uint8_t i = 0; i < length; i++) {
-        Serial.print(full_node_id[i]);
+        Serial.print(full_node_id[i], HEX);
         Serial.print(" ");
     }
 
@@ -119,7 +119,7 @@ void lcc_on_verified_node_id(uint8_t *full_node_id, bool simple_set) {
     Serial.print("LCC verified node id: full_node_id=");
 
     for (uint8_t i = 0; i < NODE_ID_LENGTH; i++) {
-        Serial.print(full_node_id[i]);
+        Serial.print(full_node_id[i], HEX);
         Serial.print(" ");
     }
 

@@ -53,7 +53,7 @@ void settings_init() {
     _lcc_node_id[2] = LCC_DEFAULT_NODE_ID_2;
     _lcc_node_id[3] = LCC_DEFAULT_NODE_ID_3;
     _lcc_node_id[4] = LCC_DEFAULT_NODE_ID_4;
-    _lcc_node_id[5] = 0x2;
+    _lcc_node_id[5] = LCC_DEFAULT_NODE_ID_5;
 
     settings_set_lcc_node_id(_lcc_node_id);
 #endif
