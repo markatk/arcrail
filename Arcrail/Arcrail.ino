@@ -19,6 +19,9 @@ void setup() {
 }
 
 void loop() {
+    // must be called first so other modules can use the timer
+    timer_update();
+
     outputs_update();
     inputs_update();
     buttons_update();
