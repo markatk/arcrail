@@ -2,10 +2,6 @@
 
 #include "timer.h"
 
-#define LED_MODE_OFF 0
-#define LED_MODE_BLINK 1
-#define LED_MODE_FLASH 2
-
 #ifdef USE_LEDS
 typedef struct {
     uint8_t mode;
@@ -54,6 +50,14 @@ void led_set(uint8_t led, uint8_t value) {
     _leds[led].mode = LED_MODE_OFF;
 }
 
+bool led_get(uint8_t led) {
+    if (led >= LED_COUNT) {
+        return false;
+    }
+
+    return read_led(&_leds[led]);
+}
+
 void led_toggle(uint8_t led) {
     if (led >= LED_COUNT) {
         return;
@@ -90,13 +94,33 @@ void led_flash(uint8_t led) {
     write_led(&_leds[led], HIGH);
 }
 
+uint8_t led_get_mode(uint8_t led) {
+    if (led >= LED_COUNT) {
+        return LED_MODE_OFF;
+    }
+
+    return _leds[led].mode;
+}
+
     #ifdef STATUS_LED
 void status_led_set(uint8_t value) {
     led_set(STATUS_LED, value);
 }
 
+bool status_led_get() {
+    return led_get(STATUS_LED);
+}
+
 void status_led_blink() {
     led_blink(STATUS_LED);
+}
+
+void status_led_flash() {
+    led_flash(STATUS_LED);
+}
+
+uint8_t status_led_get_mode() {
+    return led_get_mode(STATUS_LED);
 }
     #endif
 
