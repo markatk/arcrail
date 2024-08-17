@@ -3,9 +3,17 @@
 #include "../led.h"
 
 #ifdef USE_CAN
+    #include "message_queue.h"
+
 const uint8_t zero_data[12] = {0x00};
 uint8_t _transmit_buffer[14] = {0x00};
-uint8_t _receive_buffer[14] = {0x00};
+uint8_t _receive_buffer[5] = {0x00};
+can_message_t _receive_message;
+
+can_message_t _receive_queue_data[CAN_RECEIVE_QUEUE_SIZE];
+can_message_queue_t _receive_queue = {
+    .data = _receive_queue_data,
+};
 
     #ifdef PIN_CAN_RESET
 void _can_reset(bool value);
@@ -14,7 +22,7 @@ void _can_reset(bool value);
     #ifdef CAN_USE_MCP2515
         #include "mcp2515.h"
 
-void _handle_message(uint8_t base_address);
+void _enqueue_message(uint8_t base_address);
     #endif
 #endif
 
@@ -23,8 +31,9 @@ void can_init() {
     #ifdef PIN_CAN_RESET
     pinMode(PIN_CAN_RESET, OUTPUT);
     _can_reset(false);
-
     #endif
+
+    message_queue_init(&_receive_queue, CAN_RECEIVE_QUEUE_SIZE);
 
     #ifdef CAN_USE_MCP2515
     mcp2515_init();
@@ -50,19 +59,28 @@ void can_update() {
     // check for new messages
     uint8_t status = mcp2515_read_status();
     if ((status & MCP2515_STATUS_MASK_RX0IF) != 0) {
-        _handle_message(MCP2515_RXB0_BASE);
+        _enqueue_message(MCP2515_RXB0_BASE);
 
         // reset message since it was handled
         mcp2515_bit_modify(MCP2515_CANINTF, 0x01, 0x00);
     }
 
     if ((status & MCP2515_STATUS_MASK_RX1IF) != 0) {
-        _handle_message(MCP2515_RXB1_BASE);
+        _enqueue_message(MCP2515_RXB1_BASE);
 
         // reset message since it was handled
         mcp2515_bit_modify(MCP2515_CANINTF, 0x02, 0x00);
     }
     #endif
+
+    // read message from receive queue
+    can_message_t message;
+    if (message_queue_pop(&_receive_queue, &message)) {
+        can_on_message_received(message.header, message.length, message.data);
+
+        Serial.print("CAN: ");
+        Serial.println(_receive_message.header, HEX);
+    }
 #endif
 }
 
@@ -111,28 +129,26 @@ void _can_reset(bool value) {
     #endif
 
     #ifdef CAN_USE_MCP2515
-void _handle_message(uint8_t base_address) {
-    uint32_t identifier = 0;
-
+void _enqueue_message(uint8_t base_address) {
     // read header into buffer
     mcp2515_read(base_address + MCP2515_RXBxSIDH_OFFSET, 5, _receive_buffer);
 
-    identifier |= _receive_buffer[0] << 3 | _receive_buffer[1] >> 5;
+    _receive_message.header = _receive_buffer[0] << 3 | _receive_buffer[1] >> 5;
 
     // check if message contains extended frame
     if ((_receive_buffer[1] & 0x08) != 0) {
-        identifier |= (uint32_t)(_receive_buffer[1] & 0x03) << 27 | (uint32_t)_receive_buffer[2] << 19 | (uint32_t)_receive_buffer[3] << 11;
+        _receive_message.header |= (uint32_t)(_receive_buffer[1] & 0x03) << 27 | (uint32_t)_receive_buffer[2] << 19 | (uint32_t)_receive_buffer[3] << 11;
     }
 
     // read data
-    uint8_t length = _receive_buffer[4];
-    if (length > 8) {
-        length = 8;
+    _receive_message.length = _receive_buffer[4];
+    if (_receive_message.length > 8) {
+        _receive_message.length = 8;
     }
 
-    mcp2515_read(base_address + MCP2515_RXBxDATA_BASE_OFFSET, length, _receive_buffer + 5);
+    mcp2515_read(base_address + MCP2515_RXBxDATA_BASE_OFFSET, _receive_message.length, _receive_message.data);
 
-    can_on_message_received(identifier, length, _receive_buffer + 5);
+    message_queue_push(&_receive_queue, _receive_message);
 }
     #endif
 #endif
