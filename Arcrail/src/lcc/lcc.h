@@ -19,4 +19,8 @@ uint8_t lcc_get_state();
 uint8_t lcc_verify_node_id_addressed(uint8_t *node_id);
 
 uint8_t lcc_verify_node_id_global();
+
+    #ifdef USE_INPUTS
+void lcc_invoke_producer(uint8_t input, uint8_t state);
+    #endif
 #endif

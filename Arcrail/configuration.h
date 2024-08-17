@@ -144,6 +144,9 @@
     #if INPUT_COUNT > INPUT_COUNT_MAX
         #error Input count must not be greater than INPUT_COUNT_MAX
     #endif
+
+// #define INVERT_INPUTS
+// #define PULLUP_INPUTS
 #else
     #define INPUT_COUNT 0
 #endif

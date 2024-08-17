@@ -8,6 +8,10 @@
     #include "loconet-bus.h"
 #endif
 
+#ifdef USE_LCC
+    #include "lcc/lcc.h"
+#endif
+
 #ifdef USE_INPUTS
 uint8_t _states[INPUT_COUNT];
 uint16_t _state_counters[INPUT_COUNT];
@@ -18,7 +22,11 @@ static void send_state(uint8_t input, uint8_t state);
 void inputs_init() {
 #ifdef USE_INPUTS
     for (auto i = 0; i < INPUT_COUNT; i++) {
+    #ifdef PULLUP_INPUTS
+        pinMode(INPUTS[i], INPUT_PULLUP);
+    #else
         pinMode(INPUTS[i], INPUT);
+    #endif
 
         _states[i] = 0xFF;
         _state_counters[i] = 0;
@@ -90,16 +98,24 @@ bool inputs_try_get_state(uint8_t input, uint8_t *state) {
 }
 
 void send_state(uint8_t input, uint8_t state) {
+    #ifdef USE_LOCONET
     uint16_t address;
     if (settings_get_input_address(input, &address) == false) {
         return;
     }
 
-    #ifdef USE_LOCONET
         #ifdef INVERT_INPUTS
     loconet_report_sensor(address, !state);
         #else
     loconet_report_sensor(address, state);
+        #endif
+    #endif
+
+    #ifdef USE_LCC
+        #ifdef INVERT_INPUTS
+    lcc_invoke_producer(input, !state);
+        #else
+    lcc_invoke_producer(input, state);
         #endif
     #endif
 }
