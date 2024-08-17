@@ -92,7 +92,7 @@ void lcc_invoke_producer(uint8_t input, uint8_t state) {
         event_id[7] |= 0x01;
     }
 
-    data_link_send(MTI_PRODUCER_CONSUMER_EVENT_REPORT, LCC_EVENT_ID_LENGTH, event_id);
+    network_send(MTI_PRODUCER_CONSUMER_EVENT_REPORT, LCC_EVENT_ID_LENGTH, event_id);
 }
     #endif
 

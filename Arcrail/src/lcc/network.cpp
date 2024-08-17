@@ -77,6 +77,10 @@ void network_process_message(uint16_t mti, uint16_t source_nid, uint8_t length, 
     }
 }
 
+uint8_t network_send(uint16_t mti, uint8_t length, uint8_t *data) {
+    return data_link_send(mti, length, data);
+}
+
 bool _compare_node_id(uint8_t *in) {
     uint8_t *node_id = settings_get_lcc_node_id();
 
