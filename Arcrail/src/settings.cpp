@@ -13,8 +13,17 @@ void settings_init() {
         return;
     }
 
+    // reset data to firmware default
+#ifdef USE_INPUTS
+    for (uint8_t i = 0; i < INPUT_COUNT; i++) {
+        settings_set_value(CV_INPUT_ADDRESS_DELAY + i, 0);
+    }
+#endif
+
+#ifdef USE_LOCONET
     settings_set_value(0, SETTINGS_DEFAULT_MODULE_VALUE);
     settings_set_value(1, SETTINGS_DEFAULT_MODE_VALUE);
+#endif
 }
 
 bool settings_set_value(uint16_t address, uint16_t value) {
