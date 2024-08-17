@@ -76,6 +76,8 @@
 
 // #define PIN_CAN_RESET
 // #define CAN_INVERT_RESET
+// #define PIN_CAN_INT
+
     #ifndef CAN_RECEIVE_QUEUE_SIZE
         #define CAN_RECEIVE_QUEUE_SIZE 8
     #endif

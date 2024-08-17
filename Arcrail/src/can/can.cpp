@@ -23,6 +23,7 @@ void _can_reset(bool value);
         #include "mcp2515.h"
 
 void _enqueue_message(uint8_t base_address);
+void _can_interrupt();
     #endif
 #endif
 
@@ -33,13 +34,27 @@ void can_init() {
     _can_reset(false);
     #endif
 
+    #ifdef PIN_CAN_INT
+        #ifdef CAN_USE_MCP2515
+    pinMode(PIN_CAN_INT, INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(PIN_CAN_INT), _can_interrupt, FALLING);
+        #else
+            #error Interrupt pin is not supported for can implementation
+        #endif
+    #endif
+
     message_queue_init(&_receive_queue, CAN_RECEIVE_QUEUE_SIZE);
 
     #ifdef CAN_USE_MCP2515
     mcp2515_init();
 
-    const uint8_t config_data[3] = {0x83, 0xE5, 0x43};
-    mcp2515_write(MCP2515_CNF3, 3, (uint8_t *)config_data);
+        #ifdef PIN_CAN_INT
+    const uint8_t config_data[4] = {0x83, 0xE5, 0x43, 0x03};
+        #else
+    const uint8_t config_data[4] = {0x83, 0xE5, 0x43, 0x00};
+        #endif
+
+    mcp2515_write(MCP2515_CNF3, 4, (uint8_t *)config_data);
 
     // clear filters
     mcp2515_write(MCP2515_RXF0SIDH, 12, (uint8_t *)zero_data);
@@ -55,7 +70,7 @@ void can_init() {
 
 void can_update() {
 #ifdef USE_CAN
-    #ifdef CAN_USE_MCP2515
+    #if defined(CAN_USE_MCP2515) && !defined(PIN_CAN_INT)
     // check for new messages
     uint8_t status = mcp2515_read_status();
     if ((status & MCP2515_STATUS_MASK_RX0IF) != 0) {
@@ -77,9 +92,6 @@ void can_update() {
     can_message_t message;
     if (message_queue_pop(&_receive_queue, &message)) {
         can_on_message_received(message.header, message.length, message.data);
-
-        Serial.print("CAN: ");
-        Serial.println(_receive_message.header, HEX);
     }
 #endif
 }
@@ -149,6 +161,23 @@ void _enqueue_message(uint8_t base_address) {
     mcp2515_read(base_address + MCP2515_RXBxDATA_BASE_OFFSET, _receive_message.length, _receive_message.data);
 
     message_queue_push(&_receive_queue, _receive_message);
+}
+
+void _can_interrupt() {
+    uint8_t status = mcp2515_read_status();
+    if ((status & MCP2515_STATUS_MASK_RX0IF) != 0) {
+        _enqueue_message(MCP2515_RXB0_BASE);
+
+        // reset message since it was handled
+        mcp2515_bit_modify(MCP2515_CANINTF, 0x01, 0x00);
+    }
+
+    if ((status & MCP2515_STATUS_MASK_RX1IF) != 0) {
+        _enqueue_message(MCP2515_RXB1_BASE);
+
+        // reset message since it was handled
+        mcp2515_bit_modify(MCP2515_CANINTF, 0x02, 0x00);
+    }
 }
     #endif
 #endif
