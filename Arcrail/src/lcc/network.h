@@ -1,9 +1,13 @@
 #pragma once
 
 #include "../../configuration.h"
+#include "data_link.h"
 
 #define NETWORK_STATE_UNINITIALIZED 0
 #define NETWORK_STATE_INITIALIZED 1
+
+#define NETWORK_OK DATA_LINK_OK
+#define NETWORK_BUSY DATA_LINK_BUSY
 
 void network_init();
 

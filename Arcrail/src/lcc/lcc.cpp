@@ -8,6 +8,7 @@
     #include "events.h"
     #include "mti.h"
     #include "network.h"
+    #include "producer.h"
 
 void _process_event_report(uint8_t length, uint8_t *payload);
 #endif
@@ -16,6 +17,7 @@ void lcc_init() {
 #ifdef USE_LCC
     data_link_init();
     network_init();
+    producer_init();
 #endif
 
     lcc_reset();
@@ -25,6 +27,7 @@ void lcc_update() {
 #ifdef USE_LCC
     data_link_update();
     network_update();
+    producer_update();
 #endif
 }
 
@@ -32,6 +35,7 @@ void lcc_reset() {
 #ifdef USE_LCC
     data_link_reset();
     network_reset();
+    producer_reset();
 #endif
 }
 
@@ -76,23 +80,7 @@ void lcc_process_message(uint16_t mti, uint16_t source_nid, uint8_t length, uint
 
     #ifdef USE_INPUTS
 void lcc_invoke_producer(uint8_t input, uint8_t state) {
-    // calculate event id
-    uint8_t event_id[8];
-
-    // first 6 bytes are the node id
-    for (uint8_t i = 0; i < NODE_ID_LENGTH; i++) {
-        event_id[i] = settings_get_lcc_node_id()[i];
-    }
-
-    // last 2 bytes are the event
-    event_id[6] = LCC_EVENT_INPUT_HIGH_BYTE;
-    event_id[7] = (input & 0x7F) << 1;
-
-    if (state) {
-        event_id[7] |= 0x01;
-    }
-
-    network_send(MTI_PRODUCER_CONSUMER_EVENT_REPORT, LCC_EVENT_ID_LENGTH, event_id);
+    producer_process_input(input, state);
 }
     #endif
 
