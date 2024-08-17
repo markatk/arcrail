@@ -75,6 +75,20 @@ void inputs_reset() {
 }
 
 #ifdef USE_INPUTS
+bool inputs_try_get_state(uint8_t input, uint8_t *state) {
+    if (input >= INPUT_COUNT) {
+        return false;
+    }
+
+    #ifdef INVERT_INPUTS
+    *state = !_states[input];
+    #else
+    *state = _states[input];
+    #endif
+
+    return true;
+}
+
 void send_state(uint8_t input, uint8_t state) {
     uint16_t address;
     if (settings_get_input_address(input, &address) == false) {
