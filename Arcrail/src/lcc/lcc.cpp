@@ -61,8 +61,7 @@ uint8_t lcc_verify_node_id_global() {
 }
 
 void lcc_process_message(uint16_t mti, uint16_t source_nid, uint8_t length, uint8_t *data) {
-    // callbacks
-    lcc_on_message(mti, source_nid, length, data);
+    producer_process_message(mti, source_nid, length, data);
 
     switch (mti) {
         case MTI_PRODUCER_CONSUMER_EVENT_REPORT:
@@ -76,6 +75,9 @@ void lcc_process_message(uint16_t mti, uint16_t source_nid, uint8_t length, uint
         default:
             break;
     }
+
+    // callbacks
+    lcc_on_message(mti, source_nid, length, data);
 }
 
     #ifdef USE_INPUTS

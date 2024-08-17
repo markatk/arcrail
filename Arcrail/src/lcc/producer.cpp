@@ -53,10 +53,10 @@ void producer_update() {
     }
 
     uint16_t mti;
-    if (state) {
-        mti = MTI_CONSUMER_IDENTIFIED_VALID;
+    if ((input_state != 0 && state) || (input_state == 0 && !state)) {
+        mti = MTI_PRODUCER_IDENTIFIED_VALID;
     } else {
-        mti = MTI_CONSUMER_IDENTIFIED_INVALID;
+        mti = MTI_PRODUCER_IDENTIFIED_INVALID;
     }
 
     uint8_t event_id[8];
@@ -65,7 +65,7 @@ void producer_update() {
         return;
     }
     #else
-    uint16_t mti = MTI_CONSUMER_IDENTIFIED_UNKNOWN;
+    uint16_t mti = MTI_PRODUCER_IDENTIFIED_UNKNOWN;
 
         #error Unknown event id for producer
     #endif
@@ -88,6 +88,38 @@ void producer_reset() {
 }
 
 #ifdef USE_LCC
+bool producer_process_message(uint16_t mti, uint16_t source_nid, uint8_t length, uint8_t *data) {
+    // all messages are expected to have an event id or event id range as data
+    if (length < LCC_EVENT_ID_LENGTH) {
+        return false;
+    }
+
+    switch (mti) {
+        case MTI_IDENTIFY_PRODUCER:
+            lcc_on_identifiy_producer(data);
+            return true;
+
+        case MTI_PRODUCER_IDENTIFIED_VALID:
+            lcc_on_producer_identified(data, LCC_EVENT_STATE_VALID);
+            return true;
+
+        case MTI_PRODUCER_IDENTIFIED_INVALID:
+            lcc_on_producer_identified(data, LCC_EVENT_STATE_INVALID);
+            return false;
+
+        case MTI_PRODUCER_IDENTIFIED_UNKNOWN:
+            lcc_on_producer_identified(data, LCC_EVENT_STATE_UNKNOWN);
+            return false;
+
+        case MTI_PRODUCER_RANGE_IDENTIFIED:
+            lcc_on_producer_range_identified(data);
+            return false;
+
+        default:
+            return false;
+    }
+}
+
     #ifdef USE_INPUTS
 void producer_process_input(uint8_t input, uint8_t state) {
     // if the producer is not advertised do not send anything

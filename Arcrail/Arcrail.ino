@@ -27,15 +27,6 @@ void setup() {
 
 #ifdef BOARD_LCC_DEVELOPMENT_BOARD_REV_A
     led_blink(0);
-
-    uint8_t *node_id = settings_get_lcc_node_id();
-
-    for (uint8_t i = 0; i < NODE_ID_LENGTH; i++) {
-        Serial.print(node_id[i], HEX);
-        Serial.print(" ");
-    }
-
-    Serial.println();
 #endif
 }
 
@@ -75,7 +66,7 @@ void loop() {
 void lcc_on_message(uint16_t mti, uint16_t source_nid, uint8_t length, uint8_t *data) {
     led_flash(2);
 
-    Serial.print("LCC: mti=");
+    Serial.print("LCC raw: mti=");
     Serial.print(mti, HEX);
     Serial.print(", source_nid=");
     Serial.print(source_nid, HEX);
@@ -161,5 +152,17 @@ void lcc_on_producer_consumer_event_report(uint8_t *full_node_id, uint16_t event
     }
 
     Serial.println();
+}
+
+void lcc_on_producer_identified(uint8_t *event_id, uint8_t event_state) {
+    Serial.print("LCC producer identified: event_id=");
+
+    for (uint8_t i = 0; i < LCC_EVENT_ID_LENGTH; i++) {
+        Serial.print(event_id[i], HEX);
+        Serial.print(" ");
+    }
+
+    Serial.print(", event_state=");
+    Serial.println(event_state, HEX);
 }
 #endif

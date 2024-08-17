@@ -6,6 +6,10 @@
 #define NODE_ID_LENGTH 6
 #define LCC_EVENT_ID_LENGTH 8
 
+#define LCC_EVENT_STATE_UNKNOWN 0
+#define LCC_EVENT_STATE_VALID 1
+#define LCC_EVENT_STATE_INVALID 2
+
 // data link layer
 void lcc_on_can_control_message(uint16_t content_field, uint16_t source_nid, uint8_t length, uint8_t *data);
 
@@ -30,3 +34,9 @@ void lcc_on_verified_node_id(uint8_t *full_node_id, bool simple_set);
 
 // transport layer
 void lcc_on_producer_consumer_event_report(uint8_t *full_node_id, uint16_t event, uint8_t length, uint8_t *payload);
+
+void lcc_on_identifiy_producer(uint8_t *event_id);
+
+void lcc_on_producer_identified(uint8_t *event_id, uint8_t event_state);
+
+void lcc_on_producer_range_identified(uint8_t *event_id_range);

@@ -32,3 +32,12 @@ __attribute__((weak)) void lcc_on_verified_node_id(uint8_t *full_node_id, bool s
 
 __attribute__((weak)) void lcc_on_producer_consumer_event_report(uint8_t *full_node_id, uint16_t event, uint8_t length, uint8_t *payload) {
 }
+
+__attribute__((weak)) void lcc_on_identifiy_producer(uint8_t *event_id) {
+}
+
+__attribute__((weak)) void lcc_on_producer_identified(uint8_t *event_id, uint8_t event_state) {
+}
+
+__attribute__((weak)) void lcc_on_producer_range_identified(uint8_t *event_id_range) {
+}
