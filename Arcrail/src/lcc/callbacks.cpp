@@ -29,3 +29,6 @@ __attribute__((weak)) void lcc_on_verify_node_id(uint8_t length, uint8_t *full_n
 
 __attribute__((weak)) void lcc_on_verified_node_id(uint8_t *full_node_id, bool simple_set) {
 }
+
+__attribute__((weak)) void lcc_on_producer_consumer_event_report(uint8_t *full_node_id, uint16_t event, uint8_t length, uint8_t *payload) {
+}

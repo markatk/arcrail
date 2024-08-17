@@ -8,6 +8,8 @@
     #include "events.h"
     #include "mti.h"
     #include "network.h"
+
+void _process_event_report(uint8_t length, uint8_t *payload);
 #endif
 
 void lcc_init() {
@@ -54,6 +56,24 @@ uint8_t lcc_verify_node_id_global() {
     return data_link_send(MTI_VERIFY_NODE_ID_GLOBAL, 0, 0);
 }
 
+void lcc_process_message(uint16_t mti, uint16_t source_nid, uint8_t length, uint8_t *data) {
+    // callbacks
+    lcc_on_message(mti, source_nid, length, data);
+
+    switch (mti) {
+        case MTI_PRODUCER_CONSUMER_EVENT_REPORT:
+            _process_event_report(length, data);
+            break;
+
+        case MTI_PRODUCER_CONSUMER_EVENT_REPORT_WITH_PAYLOAD:
+            _process_event_report(length, data);
+            break;
+
+        default:
+            break;
+    }
+}
+
     #ifdef USE_INPUTS
 void lcc_invoke_producer(uint8_t input, uint8_t state) {
     // calculate event id
@@ -75,4 +95,23 @@ void lcc_invoke_producer(uint8_t input, uint8_t state) {
     data_link_send(MTI_PRODUCER_CONSUMER_EVENT_REPORT, LCC_EVENT_ID_LENGTH, event_id);
 }
     #endif
+
+void _process_event_report(uint8_t length, uint8_t *payload) {
+    if (length < LCC_EVENT_ID_LENGTH) {
+        return;
+    }
+
+    // get full node id
+    uint8_t full_node_id[6];
+
+    for (uint8_t i = 0; i < NODE_ID_LENGTH; i++) {
+        full_node_id[i] = payload[i];
+    }
+
+    // get event
+    uint16_t event = (uint16_t)payload[6] << 8 | payload[7];
+
+    // pass event with node id, event and rest of the payload
+    lcc_on_producer_consumer_event_report(full_node_id, event, length - LCC_EVENT_ID_LENGTH, payload + LCC_EVENT_ID_LENGTH);
+}
 #endif

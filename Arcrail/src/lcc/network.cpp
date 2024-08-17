@@ -4,6 +4,7 @@
     #include "../settings.h"
     #include "callbacks.h"
     #include "data_link.h"
+    #include "lcc.h"
     #include "mti.h"
 
 uint8_t _state;
@@ -51,7 +52,7 @@ void network_process_message(uint16_t mti, uint16_t source_nid, uint8_t length, 
     }
 
     // callbacks
-    lcc_on_message(mti, source_nid, length, data);
+    lcc_process_message(mti, source_nid, length, data);
 
     if (verify_node_id) {
         lcc_on_verify_node_id(length, data);
