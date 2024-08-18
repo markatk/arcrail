@@ -26,6 +26,8 @@ void led_blink(uint8_t led, uint8_t count);
 
 void led_flash(uint8_t led);
 
+void led_flash(uint8_t led, uint8_t count);
+
 uint8_t led_get_mode(uint8_t led);
 
     #ifdef STATUS_LED
@@ -34,6 +36,8 @@ void status_led_set(uint8_t value);
 bool status_led_get();
 
 void status_led_blink();
+
+void status_led_blink(uint8_t count);
 
 void status_led_flash();
 
