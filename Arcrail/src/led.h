@@ -7,6 +7,8 @@
 #define LED_MODE_BLINK 1
 #define LED_MODE_FLASH 2
 
+#define LED_MAX_BLINK_COUNT 0x0F
+
 void led_init();
 
 void led_update();
@@ -19,6 +21,8 @@ bool led_get(uint8_t led);
 void led_toggle(uint8_t led);
 
 void led_blink(uint8_t led);
+
+void led_blink(uint8_t led, uint8_t count);
 
 void led_flash(uint8_t led);
 

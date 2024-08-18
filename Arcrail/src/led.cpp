@@ -7,6 +7,8 @@ typedef struct {
     uint8_t mode;
     uint8_t delay;
     uint8_t time;
+    uint8_t count : 4;
+    uint8_t counter : 4;
 
     uint8_t pin;
     // TODO: Add invert support
@@ -67,12 +69,22 @@ void led_toggle(uint8_t led) {
 }
 
 void led_blink(uint8_t led) {
+    led_blink(led, 0);
+}
+
+void led_blink(uint8_t led, uint8_t count) {
     if (led >= LED_COUNT) {
+        return;
+    }
+
+    if (count >= LED_MAX_BLINK_COUNT) {
         return;
     }
 
     _leds[led].time = 5;
     _leds[led].mode = LED_MODE_BLINK;
+    _leds[led].count = count;
+    _leds[led].counter = count;
 
     // set initial delay value
     _leds[led].delay = _leds[led].time;
@@ -130,6 +142,7 @@ void initialize_led(led_t *led, uint8_t pin) {
     led->mode = LED_MODE_OFF;
     led->delay = 0;
     led->time = 0;
+    led->count = 0;
     led->pin = pin;
 
     write_led(led, LOW);
@@ -143,7 +156,19 @@ void update_led(led_t *led) {
         } else {
             toggle_led(led);
 
-            led->delay = led->time;
+            // if count is set blink as many times before waiting a longer delay
+            if (led->count > 0 && !read_led(led)) {
+                led->counter -= 1;
+
+                if (led->counter > 0) {
+                    led->delay = led->time;
+                } else {
+                    led->delay = led->time * 5;
+                    led->counter = led->count;
+                }
+            } else {
+                led->delay = led->time;
+            }
         }
     } else if (led->mode == LED_MODE_FLASH) {
         // wait till the delay is over
