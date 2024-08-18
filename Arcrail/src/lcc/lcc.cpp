@@ -52,12 +52,12 @@ uint8_t lcc_get_state() {
     return LCC_STATE_NETWORK_INITIALIZED;
 }
 
-uint8_t lcc_verify_node_id_addressed(uint8_t *node_id) {
-    return data_link_send(MTI_VERIFY_NODE_ID_ADDRESSED, NODE_ID_LENGTH, node_id);
+void lcc_verify_node_id_addressed(uint8_t *node_id) {
+    data_link_send(MTI_VERIFY_NODE_ID_ADDRESSED, NODE_ID_LENGTH, node_id);
 }
 
-uint8_t lcc_verify_node_id_global() {
-    return data_link_send(MTI_VERIFY_NODE_ID_GLOBAL, 0, 0);
+void lcc_verify_node_id_global() {
+    data_link_send(MTI_VERIFY_NODE_ID_GLOBAL, 0, 0);
 }
 
 void lcc_process_message(uint16_t mti, uint16_t source_nid, uint8_t length, uint8_t *data) {

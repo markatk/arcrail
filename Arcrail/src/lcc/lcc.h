@@ -16,9 +16,9 @@ void lcc_reset();
 #ifdef USE_LCC
 uint8_t lcc_get_state();
 
-uint8_t lcc_verify_node_id_addressed(uint8_t *node_id);
+void lcc_verify_node_id_addressed(uint8_t *node_id);
 
-uint8_t lcc_verify_node_id_global();
+void lcc_verify_node_id_global();
 
 // internally called by network layer
 void lcc_process_message(uint16_t mti, uint16_t source_nid, uint8_t length, uint8_t *data);

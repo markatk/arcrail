@@ -82,6 +82,10 @@
         #define CAN_RECEIVE_QUEUE_SIZE 8
     #endif
 
+    #ifndef CAN_TRANSMIT_QUEUE_SIZE
+        #define CAN_TRANSMIT_QUEUE_SIZE 8
+    #endif
+
     #ifdef CAN_USE_MCP2515
         #include "src/can/mcp2515.h"
     #else

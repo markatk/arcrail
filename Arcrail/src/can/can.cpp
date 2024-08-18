@@ -11,8 +11,14 @@ uint8_t _receive_buffer[5] = {0x00};
 can_message_t _receive_message;
 
 can_message_t _receive_queue_data[CAN_RECEIVE_QUEUE_SIZE];
+can_message_t _transmit_queue_data[CAN_TRANSMIT_QUEUE_SIZE];
+
 can_message_queue_t _receive_queue = {
     .data = _receive_queue_data,
+};
+
+can_message_queue_t _transmit_queue = {
+    .data = _transmit_queue_data,
 };
 
     #ifdef PIN_CAN_RESET
@@ -22,6 +28,7 @@ void _can_reset(bool value);
     #ifdef CAN_USE_MCP2515
         #include "mcp2515.h"
 
+void _send_message(uint8_t buffer_address, uint32_t header, uint8_t length, uint8_t *data);
 void _enqueue_message(uint8_t base_address);
 void _can_interrupt();
     #endif
@@ -44,6 +51,7 @@ void can_init() {
     #endif
 
     message_queue_init(&_receive_queue, CAN_RECEIVE_QUEUE_SIZE);
+    message_queue_init(&_transmit_queue, CAN_TRANSMIT_QUEUE_SIZE);
 
     #ifdef CAN_USE_MCP2515
     mcp2515_init();
@@ -88,41 +96,42 @@ void can_update() {
     }
     #endif
 
-    // read message from receive queue
+    // send message from transmit queue
     can_message_t message;
+
+    if (message_queue_is_empty(&_transmit_queue) == false) {
+    #ifdef CAN_USE_MCP2515
+        // check if message can be send
+        uint8_t transmit_buffer_address = mcp2515_get_empty_transmit_buffer();
+
+        if (transmit_buffer_address > 0 && message_queue_pop(&_transmit_queue, &message)) {
+            _send_message(transmit_buffer_address, message.header, message.length, message.data);
+        }
+    #else
+        #error Message send is not implemented
+    #endif
+    }
+
+    // read message from receive queue
     if (message_queue_pop(&_receive_queue, &message)) {
         can_on_message_received(message.header, message.length, message.data);
     }
 #endif
 }
 
-uint8_t can_send_message(uint32_t identifier, uint8_t length, uint8_t *data) {
+void can_send_message(uint32_t identifier, uint8_t length, uint8_t *data) {
 #ifdef USE_CAN
-    #ifdef CAN_USE_MCP2515
-    uint8_t transmit_buffer_address = mcp2515_get_empty_transmit_buffer();
-    if (transmit_buffer_address == 0) {
-        return CAN_BUSY;
-    }
-
-    // copy message into buffer
-    _transmit_buffer[0] = identifier >> 3;
-    _transmit_buffer[1] = (identifier & 0x07) << 5 | 0x08 | identifier >> 27;
-    _transmit_buffer[2] = identifier >> 19;
-    _transmit_buffer[3] = identifier >> 11;
-    _transmit_buffer[4] = length & 0x0F;
+    can_message_t message;
+    message.header = identifier;
+    message.length = length;
 
     for (uint8_t i = 0; i < length; i++) {
-        _transmit_buffer[5 + i] = data[i];
+        message.data[i] = data[i];
     }
 
-    // copy data into buffer
-    mcp2515_write(transmit_buffer_address + MCP2515_RXBxSIDH_OFFSET, length + 5, _transmit_buffer);
-
-    // mark buffer to be ready for transmit
-    mcp2515_write(transmit_buffer_address + MCP2515_TXBxCTRL_OFFSET, 0x08);
-
-    return CAN_OK;
-    #endif
+    if (message_queue_push(&_transmit_queue, message)) {
+        // TODO: Increase transmit error counter
+    }
 #endif
 }
 
@@ -130,6 +139,25 @@ __attribute__((weak)) void can_on_message_received(uint32_t identifier, uint8_t 
 }
 
 #ifdef USE_CAN
+void _send_message(uint8_t buffer_address, uint32_t header, uint8_t length, uint8_t *data) {
+    // copy message into buffer
+    _transmit_buffer[0] = header >> 3;
+    _transmit_buffer[1] = (header & 0x07) << 5 | 0x08 | header >> 27;
+    _transmit_buffer[2] = header >> 19;
+    _transmit_buffer[3] = header >> 11;
+    _transmit_buffer[4] = length & 0x0F;
+
+    for (uint8_t i = 0; i < length; i++) {
+        _transmit_buffer[5 + i] = data[i];
+    }
+
+    // copy data into buffer
+    mcp2515_write(buffer_address + MCP2515_RXBxSIDH_OFFSET, length + 5, _transmit_buffer);
+
+    // mark buffer to be ready for transmit
+    mcp2515_write(buffer_address + MCP2515_TXBxCTRL_OFFSET, 0x08);
+}
+
     #ifdef PIN_CAN_RESET
 void _can_reset(bool value) {
         #ifdef CAN_INVERT_RESET

@@ -23,9 +23,9 @@ void network_update() {
 
     // switch to initialized state
     if (data_link_get_state() == DATA_LINK_STATE_PERMITTED) {
-        if (data_link_send(MTI_INITIALIZATION_COMPLETE_SIMPLE_SET, NODE_ID_LENGTH, settings_get_lcc_node_id()) == DATA_LINK_OK) {
-            _state = NETWORK_STATE_INITIALIZED;
-        }
+        data_link_send(MTI_INITIALIZATION_COMPLETE_SIMPLE_SET, NODE_ID_LENGTH, settings_get_lcc_node_id());
+
+        _state = NETWORK_STATE_INITIALIZED;
     }
 }
 
@@ -77,8 +77,8 @@ void network_process_message(uint16_t mti, uint16_t source_nid, uint8_t length, 
     }
 }
 
-uint8_t network_send(uint16_t mti, uint8_t length, uint8_t *data) {
-    return data_link_send(mti, length, data);
+void network_send(uint16_t mti, uint8_t length, uint8_t *data) {
+    data_link_send(mti, length, data);
 }
 
 bool _compare_node_id(uint8_t *in) {

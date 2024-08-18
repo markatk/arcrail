@@ -70,9 +70,7 @@ void producer_update() {
         #error Unknown event id for producer
     #endif
 
-    if (network_send(mti, LCC_EVENT_ID_LENGTH, event_id) != NETWORK_OK) {
-        return;
-    }
+    network_send(mti, LCC_EVENT_ID_LENGTH, event_id);
 
     // // producer was advertised
     _producer_states[index] = true;
