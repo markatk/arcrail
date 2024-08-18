@@ -26,7 +26,9 @@ void setup() {
     lcc_init();
 
 #ifdef BOARD_LCC_DEVELOPMENT_BOARD_REV_A
-    led_blink(0);
+    Serial.println("arcrail initialized");
+
+    led_blink(0, 3);
 #endif
 }
 
