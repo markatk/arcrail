@@ -93,12 +93,22 @@ void led_blink(uint8_t led, uint8_t count) {
 }
 
 void led_flash(uint8_t led) {
+    led_flash(led, 0);
+}
+
+void led_flash(uint8_t led, uint8_t count) {
     if (led >= LED_COUNT) {
+        return;
+    }
+
+    if (count >= LED_MAX_BLINK_COUNT) {
         return;
     }
 
     _leds[led].time = 1;
     _leds[led].mode = LED_MODE_FLASH;
+    _leds[led].count = count;
+    _leds[led].counter = count;
 
     // set initial delay value
     _leds[led].delay = _leds[led].time;
@@ -125,6 +135,10 @@ bool status_led_get() {
 
 void status_led_blink() {
     led_blink(STATUS_LED);
+}
+
+void status_led_blink(uint8_t count) {
+    led_blink(STATUS_LED, count);
 }
 
 void status_led_flash() {
@@ -175,9 +189,21 @@ void update_led(led_t *led) {
         if (led->delay > 0) {
             led->delay -= 1;
         } else {
-            write_led(led, LOW);
+            toggle_led(led);
 
-            led->mode = LED_MODE_OFF;
+            // if count is set blink as many times before waiting a longer delay
+            if (led->count > 0 && !read_led(led)) {
+                led->counter -= 1;
+
+                if (led->counter > 0) {
+                    led->delay = led->time;
+                } else {
+                    // stop flashing
+                    led->mode = LED_MODE_OFF;
+                }
+            } else {
+                led->delay = led->time;
+            }
         }
     }
 }
