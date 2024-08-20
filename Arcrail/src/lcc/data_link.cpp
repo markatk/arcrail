@@ -21,10 +21,10 @@
 
 uint8_t _data_link_state;
 uint8_t _check_id_alias_state;
-uint16_t _node_id_alias;
+lcc_node_id_alias_t _node_id_alias;
 
 void _send_can_control_message(uint16_t content_field, uint8_t length, uint8_t *data);
-void _process_message(uint16_t content_field, uint16_t source_nid, uint8_t length, uint8_t *data);
+void _process_message(uint16_t content_field, lcc_node_id_alias_t source_nid, uint8_t length, uint8_t *data);
 
 void data_link_init() {
 }
@@ -87,7 +87,7 @@ uint8_t data_link_get_state() {
     return _data_link_state;
 }
 
-uint16_t data_link_get_alias() {
+lcc_node_id_alias_t data_link_get_alias() {
     // do not return the alias if it is not reserved properly
     if (_data_link_state == DATA_LINK_STATE_INHIBITED) {
         return 0;
@@ -96,7 +96,7 @@ uint16_t data_link_get_alias() {
     return _node_id_alias;
 }
 
-void data_link_send(uint16_t mti, uint8_t length, uint8_t *data) {
+void data_link_send(lcc_mti_t mti, uint8_t length, uint8_t *data) {
     uint32_t identifier = 0x19000000 | ((uint32_t)mti & 0x0FFF) << 12 | _node_id_alias;
 
     can_send_message(identifier, length, data);
@@ -109,13 +109,13 @@ void can_on_message_received(uint32_t identifier, uint8_t length, uint8_t *data)
     }
 
     uint16_t content_field = (identifier & 0x07FFF000) >> 12;
-    uint16_t source_nid = identifier & 0x0FFF;
+    lcc_node_id_alias_t source_nid = identifier & 0x0FFF;
 
     // handle can control or lcc messages
     if ((identifier & 0x08000000) == 0) {
         _process_message(content_field, source_nid, length, data);
     } else if ((content_field & 0x7000) == 0x1000) {
-        uint16_t mti = content_field & 0x0FFF;
+        lcc_mti_t mti = content_field & 0x0FFF;
 
         network_process_message(mti, source_nid, length, data);
     }
@@ -127,7 +127,7 @@ void _send_can_control_message(uint16_t content_field, uint8_t length, uint8_t *
     can_send_message(identifier, length, data);
 }
 
-void _process_message(uint16_t content_field, uint16_t source_nid, uint8_t length, uint8_t *data) {
+void _process_message(uint16_t content_field, lcc_node_id_alias_t source_nid, uint8_t length, uint8_t *data) {
     // if in check node id alias process and same the tested alias
     if (_check_id_alias_state != CHECK_ID_ALIAS_STATE_OFF && source_nid == _node_id_alias) {
         // restart check process with new alias
@@ -140,12 +140,17 @@ void _process_message(uint16_t content_field, uint16_t source_nid, uint8_t lengt
     }
 
     if (source_nid == _node_id_alias) {
-        // TODO: ensure message is send
         _send_can_control_message(CAN_CONTROL_RESERVE_ID, 0, 0);
     }
 
     // handle callbacks
     lcc_on_can_control_message(content_field, source_nid, length, data);
+
+    lcc_node_id_t node_id;
+
+    for (uint8_t i = 0; i < length && i < LCC_NODE_ID_LENGTH; i++) {
+        node_id.data[i] = data[i];
+    }
 
     switch (content_field) {
             // TODO: Handle check id messages
@@ -155,15 +160,15 @@ void _process_message(uint16_t content_field, uint16_t source_nid, uint8_t lengt
             break;
 
         case CAN_CONTROL_ALIAS_MAP_DEFINITION:
-            lcc_on_alias_map_definition(source_nid, data);
+            lcc_on_alias_map_definition(source_nid, node_id);
             break;
 
         case CAN_CONTROL_ALIAS_MAP_ENQUIRY:
-            lcc_on_alias_map_enquiry(source_nid, data);
+            lcc_on_alias_map_enquiry(source_nid, node_id);
             break;
 
         case CAN_CONTROL_ALIAS_MAP_RESET:
-            lcc_on_alias_map_reset(source_nid, data);
+            lcc_on_alias_map_reset(source_nid, node_id);
             break;
 
         default:

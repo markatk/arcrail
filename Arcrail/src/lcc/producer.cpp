@@ -92,25 +92,31 @@ bool producer_process_message(uint16_t mti, uint16_t source_nid, uint8_t length,
         return false;
     }
 
+    lcc_event_id_t event_id;
+
+    for (uint8_t i = 0; i < length && i < LCC_EVENT_ID_LENGTH; i++) {
+        event_id.data[i] = data[i];
+    }
+
     switch (mti) {
         case MTI_IDENTIFY_PRODUCER:
-            lcc_on_identifiy_producer(data);
+            lcc_on_identify_producer(event_id);
             return true;
 
         case MTI_PRODUCER_IDENTIFIED_VALID:
-            lcc_on_producer_identified(data, LCC_EVENT_STATE_VALID);
+            lcc_on_producer_identified(event_id, LCC_EVENT_STATE_VALID);
             return true;
 
         case MTI_PRODUCER_IDENTIFIED_INVALID:
-            lcc_on_producer_identified(data, LCC_EVENT_STATE_INVALID);
+            lcc_on_producer_identified(event_id, LCC_EVENT_STATE_INVALID);
             return false;
 
         case MTI_PRODUCER_IDENTIFIED_UNKNOWN:
-            lcc_on_producer_identified(data, LCC_EVENT_STATE_UNKNOWN);
+            lcc_on_producer_identified(event_id, LCC_EVENT_STATE_UNKNOWN);
             return false;
 
         case MTI_PRODUCER_RANGE_IDENTIFIED:
-            lcc_on_producer_range_identified(data);
+            lcc_on_producer_range_identified(event_id);
             return false;
 
         default:

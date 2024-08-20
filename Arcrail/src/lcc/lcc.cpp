@@ -68,15 +68,15 @@ uint8_t lcc_get_state() {
     return LCC_STATE_NETWORK_INITIALIZED;
 }
 
-void lcc_verify_node_id_addressed(uint8_t *node_id) {
-    data_link_send(MTI_VERIFY_NODE_ID_ADDRESSED, LCC_NODE_ID_LENGTH, node_id);
+void lcc_verify_node_id_addressed(lcc_node_id_t node_id) {
+    data_link_send(MTI_VERIFY_NODE_ID_ADDRESSED, LCC_NODE_ID_LENGTH, node_id.data);
 }
 
 void lcc_verify_node_id_global() {
     data_link_send(MTI_VERIFY_NODE_ID_GLOBAL, 0, 0);
 }
 
-void lcc_process_message(uint16_t mti, uint16_t source_nid, uint8_t length, uint8_t *data) {
+void lcc_process_message(lcc_mti_t mti, lcc_node_id_alias_t source_nid, uint8_t length, uint8_t *data) {
     producer_process_message(mti, source_nid, length, data);
 
     switch (mti) {
@@ -107,17 +107,18 @@ void _process_event_report(uint8_t length, uint8_t *payload) {
         return;
     }
 
+    // TODO: Change to read event id as whole and not care about node id?
     // get full node id
-    uint8_t full_node_id[6];
+    lcc_node_id_t node_id;
 
     for (uint8_t i = 0; i < LCC_NODE_ID_LENGTH; i++) {
-        full_node_id[i] = payload[i];
+        node_id.data[i] = payload[i];
     }
 
     // get event
     uint16_t event = (uint16_t)payload[6] << 8 | payload[7];
 
     // pass event with node id, event and rest of the payload
-    lcc_on_producer_consumer_event_report(full_node_id, event, length - LCC_EVENT_ID_LENGTH, payload + LCC_EVENT_ID_LENGTH);
+    lcc_on_producer_consumer_event_report(node_id, event, length - LCC_EVENT_ID_LENGTH, payload + LCC_EVENT_ID_LENGTH);
 }
 #endif

@@ -37,7 +37,7 @@ uint8_t network_get_state() {
     return _state;
 }
 
-void network_process_message(uint16_t mti, uint16_t source_nid, uint8_t length, uint8_t *data) {
+void network_process_message(lcc_mti_t mti, lcc_node_id_alias_t source_nid, uint8_t length, uint8_t *data) {
     // respond to verify node id messages
     bool verify_node_id = false;
 
@@ -54,22 +54,28 @@ void network_process_message(uint16_t mti, uint16_t source_nid, uint8_t length, 
     // callbacks
     lcc_process_message(mti, source_nid, length, data);
 
+    lcc_node_id_t node_id;
+
+    for (uint8_t i = 0; i < length && i < LCC_NODE_ID_LENGTH; i++) {
+        node_id.data[i] = data[i];
+    }
+
     if (verify_node_id) {
-        lcc_on_verify_node_id(length, data);
+        lcc_on_verify_node_id(length, node_id);
     }
 
     switch (mti) {
         case MTI_INITIALIZATION_COMPLETE_FULL_PROTOCOL:
         case MTI_INITIALIZATION_COMPLETE_SIMPLE_SET:
-            lcc_on_initialization_complete(source_nid, data);
+            lcc_on_initialization_complete(source_nid, node_id);
             break;
 
         case MTI_VERIFIED_NODE_ID_FULL_PROTOCOL:
-            lcc_on_verified_node_id(data, false);
+            lcc_on_verified_node_id(node_id, false);
             break;
 
         case MTI_VERIFIED_NODE_ID_SIMPLE_SET:
-            lcc_on_verified_node_id(data, true);
+            lcc_on_verified_node_id(node_id, true);
             break;
 
         default:
@@ -77,7 +83,7 @@ void network_process_message(uint16_t mti, uint16_t source_nid, uint8_t length, 
     }
 }
 
-void network_send(uint16_t mti, uint8_t length, uint8_t *data) {
+void network_send(lcc_mti_t mti, uint8_t length, uint8_t *data) {
     data_link_send(mti, length, data);
 }
 
@@ -94,7 +100,6 @@ bool _compare_node_id(uint8_t *in) {
 }
 
 void _send_verified_node_id() {
-    // TODO: Ensure message is send
     // TODO: Support full protocol
     data_link_send(MTI_VERIFIED_NODE_ID_SIMPLE_SET, LCC_NODE_ID_LENGTH, settings_get_lcc_node_id());
 }
