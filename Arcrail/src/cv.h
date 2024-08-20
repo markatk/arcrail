@@ -21,4 +21,7 @@
     #define CV_LCC_NODE_ID_0_1 2
     #define CV_LCC_NODE_ID_2_3 3
     #define CV_LCC_NODE_ID_4_5 4
+    #define CV_LCC_NEXT_EVENT_ID 5
+
+    #define CV_LCC_PRODUCER_CONSUMER_EVENT_ID_BASE 301
 #endif

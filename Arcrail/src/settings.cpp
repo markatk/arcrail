@@ -8,8 +8,10 @@
     #include "lcc/lcc.h"
 
 uint8_t _lcc_node_id[6];
+uint16_t _lcc_next_event_id;
 
-void _load_lcc_node_id();
+void _load_lcc_settings();
+uint16_t _lcc_get_producer_consumer_event_id_address(uint8_t producer_consumer);
 #endif
 
 bool _is_valid_cv(uint16_t cv);
@@ -20,7 +22,8 @@ void settings_init() {
     if (EEPROM.read(CV_FIRMWARE * 2) != 0xFF && EEPROM.read(CV_FIRMWARE * 2 + 1) != 0xFF) {
 // load some data into memory
 #ifdef USE_LCC
-        _load_lcc_node_id();
+        // load some data into memory
+        _load_lcc_settings();
 #endif
 
         return;
@@ -56,6 +59,11 @@ void settings_init() {
     _lcc_node_id[5] = LCC_DEFAULT_NODE_ID_5;
 
     settings_set_lcc_node_id(_lcc_node_id);
+
+    _lcc_next_event_id = 0;
+    settings_set_value(CV_LCC_NEXT_EVENT_ID, _lcc_next_event_id);
+
+    // TODO: set initial producer/consumer event ids
 #endif
 }
 
@@ -265,9 +273,86 @@ bool settings_set_lcc_node_id(uint8_t *node_id) {
 uint8_t *settings_get_lcc_node_id() {
     return _lcc_node_id;
 }
+
+uint16_t settings_get_lcc_next_event_id() {
+    uint16_t event_id = _lcc_next_event_id;
+
+    // advance id before returning it so it is new on every call
+    _lcc_next_event_id += 1;
+    settings_set_value(CV_LCC_NEXT_EVENT_ID, _lcc_next_event_id);
+
+    return event_id;
+}
+
+bool settings_set_lcc_producer_consumer_event_id(uint8_t producer_consumer, uint8_t *event_id) {
+    if (producer_consumer >= LCC_PRODUCER_CONSUMER_COUNT) {
+        return false;
+    }
+
+    uint16_t address = _lcc_get_producer_consumer_event_id_address(producer_consumer);
+
+    uint16_t value = (uint16_t)event_id[0] << 8 | event_id[1];
+    if (settings_set_value(address, value) == false) {
+        return false;
+    }
+
+    value = (uint16_t)event_id[2] << 8 | event_id[3];
+    if (settings_set_value(address + 1, value) == false) {
+        return false;
+    }
+
+    value = (uint16_t)event_id[4] << 8 | event_id[5];
+    if (settings_set_value(address + 2, value) == false) {
+        return false;
+    }
+
+    value = (uint16_t)event_id[6] << 8 | event_id[7];
+
+    return settings_set_value(address + 3, value);
+}
+
+bool settings_get_lcc_producer_consumer_event_id(uint8_t producer_consumer, uint8_t *event_id) {
+    if (producer_consumer >= LCC_PRODUCER_CONSUMER_COUNT) {
+        return false;
+    }
+
+    uint16_t address = _lcc_get_producer_consumer_event_id_address(producer_consumer);
+
+    uint16_t value;
+    if (settings_get_value(address, &value) == false) {
+        return false;
+    }
+
+    event_id[0] = value >> 8;
+    event_id[1] = value & 0xFF;
+
+    if (settings_get_value(address + 1, &value) == false) {
+        return false;
+    }
+
+    event_id[2] = value >> 8;
+    event_id[3] = value & 0xFF;
+
+    if (settings_get_value(address + 2, &value) == false) {
+        return false;
+    }
+
+    event_id[4] = value >> 8;
+    event_id[5] = value & 0xFF;
+
+    if (settings_get_value(address + 3, &value) == false) {
+        return false;
+    }
+
+    event_id[7] = value >> 8;
+    event_id[8] = value & 0xFF;
+
+    return true;
+}
 #endif
 
-__attribute__((weak)) bool settings_on_programming_helper(uint8_t mode, uint16_t parameter) {
+__attribute__((weak)) bool
+settings_on_programming_helper(uint8_t mode, uint16_t parameter) {
     return false;
 }
 
@@ -335,7 +420,7 @@ bool _handle_programming_helper(uint16_t value) {
 }
 
 #ifdef USE_LCC
-void _load_lcc_node_id() {
+void _load_lcc_settings() {
     uint16_t value;
 
     settings_get_value(CV_LCC_NODE_ID_0_1, &value);
@@ -349,5 +434,13 @@ void _load_lcc_node_id() {
     settings_get_value(CV_LCC_NODE_ID_4_5, &value);
     _lcc_node_id[4] = value >> 8;
     _lcc_node_id[5] = value;
+
+    settings_get_value(CV_LCC_NEXT_EVENT_ID, &_lcc_next_event_id);
+}
+
+uint16_t _lcc_get_producer_consumer_event_id_address(uint8_t producer_consumer) {
+    // calculate settings address
+    // times 4 because event_id is 8 bytes long and an address represents two bytes: slot * 8 / 2
+    return CV_LCC_PRODUCER_CONSUMER_EVENT_ID_BASE + producer_consumer * 4;
 }
 #endif

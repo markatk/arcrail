@@ -9,6 +9,8 @@
 
 void settings_init();
 
+// TODO: Add settings_reset_to_firmware function
+
 bool settings_set_value(uint16_t address, uint16_t value);
 
 bool settings_get_value(uint16_t address, uint16_t *value);
@@ -33,6 +35,12 @@ bool settings_get_input_delay(uint8_t input, uint16_t *delay);
 bool settings_set_lcc_node_id(uint8_t *node_id);
 
 uint8_t *settings_get_lcc_node_id();
+
+uint16_t settings_get_lcc_next_event_id();
+
+bool settings_set_lcc_producer_consumer_event_id(uint8_t producer_consumer, uint8_t *event_id);
+
+bool settings_get_lcc_producer_consumer_event_id(uint8_t producer_consumer, uint8_t *event_id);
 #endif
 
 bool settings_on_programming_helper(uint8_t mode, uint16_t parameter);
