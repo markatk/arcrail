@@ -10,6 +10,10 @@
     #include "network.h"
     #include "producer.h"
 
+    #ifdef LCC_USE_BLUE_GOLD
+        #include "blue_gold.h"
+    #endif
+
 void _process_event_report(uint8_t length, uint8_t *payload);
 #endif
 
@@ -18,6 +22,10 @@ void lcc_init() {
     data_link_init();
     network_init();
     producer_init();
+
+    #ifdef LCC_USE_BLUE_GOLD
+    blue_gold_init();
+    #endif
 #endif
 
     lcc_reset();
@@ -28,6 +36,10 @@ void lcc_update() {
     data_link_update();
     network_update();
     producer_update();
+
+    #ifdef LCC_USE_BLUE_GOLD
+    blue_gold_update();
+    #endif
 #endif
 }
 
@@ -36,6 +48,10 @@ void lcc_reset() {
     data_link_reset();
     network_reset();
     producer_reset();
+
+    #ifdef LCC_USE_BLUE_GOLD
+    blue_gold_reset();
+    #endif
 #endif
 }
 

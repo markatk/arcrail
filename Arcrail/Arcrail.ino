@@ -28,7 +28,9 @@ void setup() {
 #ifdef BOARD_LCC_DEVELOPMENT_BOARD_REV_A
     Serial.println("arcrail initialized");
 
+    #ifndef LCC_USE_BLUE_GOLD
     led_blink(0, 3);
+    #endif
 #endif
 }
 
@@ -43,25 +45,6 @@ void loop() {
     can_update();
     lcc_update();
     led_update();
-
-#ifdef BOARD_LCC_DEVELOPMENT_BOARD_REV_A
-    if (button_is_just_pressed(0)) {
-        lcc_verify_node_id_global();
-    }
-
-    // display lcc state with leds
-    if (led_get(1) == false && lcc_get_state() >= LCC_STATE_DATA_LINK_INITIALIZED) {
-        led_set(1, true);
-    } else if (led_get(1) && lcc_get_state() < LCC_STATE_DATA_LINK_INITIALIZED) {
-        led_set(1, false);
-    }
-
-    if (led_get(2) == false && lcc_get_state() >= LCC_STATE_NETWORK_INITIALIZED) {
-        led_set(2, true);
-    } else if (led_get(2) && lcc_get_state() < LCC_STATE_NETWORK_INITIALIZED) {
-        led_set(2, false);
-    }
-#endif
 }
 
 #ifdef BOARD_LCC_DEVELOPMENT_BOARD_REV_A
