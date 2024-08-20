@@ -159,10 +159,10 @@ bool _try_get_input_event_id(uint8_t input, uint8_t state, uint8_t *event_id) {
     }
 
     // copy first 6 bytes from the node id
-    uint8_t *node_id = settings_get_lcc_node_id();
+    lcc_node_id_t node_id = settings_get_lcc_node_id();
 
     for (uint8_t i = 0; i < LCC_NODE_ID_LENGTH; i++) {
-        event_id[i] = node_id[i];
+        event_id[i] = node_id.data[i];
     }
 
     // last 2 bytes are the event

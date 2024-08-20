@@ -2,6 +2,10 @@
 
 #include "../configuration.h"
 
+#ifdef USE_LCC
+    #include "lcc/types.h"
+#endif
+
 #define SWITCHING_MODE_OFF 0
 #define SWITCHING_MODE_TIME 1
 #define SWITCHING_MODE_BLINK 2
@@ -32,15 +36,15 @@ bool settings_get_input_address(uint8_t input, uint16_t *address);
 bool settings_get_input_delay(uint8_t input, uint16_t *delay);
 
 #ifdef USE_LCC
-bool settings_set_lcc_node_id(uint8_t *node_id);
+bool settings_set_lcc_node_id(lcc_node_id_t node_id);
 
-uint8_t *settings_get_lcc_node_id();
+lcc_node_id_t settings_get_lcc_node_id();
 
-uint16_t settings_get_lcc_next_event_id();
+lcc_event_id_t settings_get_lcc_next_event_id();
 
-bool settings_set_lcc_producer_consumer_event_id(uint8_t producer_consumer, uint8_t *event_id);
+bool settings_set_lcc_producer_consumer_event_id(uint8_t producer_consumer, lcc_event_id_t event_id);
 
-bool settings_get_lcc_producer_consumer_event_id(uint8_t producer_consumer, uint8_t *event_id);
+bool settings_get_lcc_producer_consumer_event_id(uint8_t producer_consumer, lcc_event_id_t event_id);
 #endif
 
 bool settings_on_programming_helper(uint8_t mode, uint16_t parameter);

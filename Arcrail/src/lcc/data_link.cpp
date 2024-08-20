@@ -39,16 +39,16 @@ void data_link_update() {
     if (_check_id_alias_state >= CHECK_ID_ALIAS_STATE_4 && _check_id_alias_state <= CHECK_ID_ALIAS_STATE_1) {
         uint16_t content_field = (uint16_t)_check_id_alias_state << 12;
 
-        uint8_t *node_id = settings_get_lcc_node_id();
+        lcc_node_id_t node_id = settings_get_lcc_node_id();
 
         if (_check_id_alias_state == CHECK_ID_ALIAS_STATE_1) {
-            content_field |= ((uint16_t)node_id[0]) << 4 | node_id[1] >> 4;
+            content_field |= ((uint16_t)node_id.data[0]) << 4 | node_id.data[1] >> 4;
         } else if (_check_id_alias_state == CHECK_ID_ALIAS_STATE_2) {
-            content_field |= ((uint16_t)(node_id[1] & 0x0F)) << 8 | node_id[2];
+            content_field |= ((uint16_t)(node_id.data[1] & 0x0F)) << 8 | node_id.data[2];
         } else if (_check_id_alias_state == CHECK_ID_ALIAS_STATE_3) {
-            content_field |= ((uint16_t)node_id[3]) << 4 | node_id[4] >> 4;
+            content_field |= ((uint16_t)node_id.data[3]) << 4 | node_id.data[4] >> 4;
         } else if (_check_id_alias_state == CHECK_ID_ALIAS_STATE_4) {
-            content_field |= ((uint16_t)(node_id[4] & 0x0F)) << 8 | node_id[5];
+            content_field |= ((uint16_t)(node_id.data[4] & 0x0F)) << 8 | node_id.data[5];
         }
 
         _send_can_control_message(content_field, 0, 0);
@@ -68,7 +68,7 @@ void data_link_update() {
         }
     } else {
         // transmit to permitted state by sending an alias map definition can control message
-        _send_can_control_message(CAN_CONTROL_ALIAS_MAP_DEFINITION, 6, settings_get_lcc_node_id());
+        _send_can_control_message(CAN_CONTROL_ALIAS_MAP_DEFINITION, LCC_NODE_ID_LENGTH, settings_get_lcc_node_id().data);
 
         _data_link_state = DATA_LINK_STATE_PERMITTED;
     }
@@ -77,7 +77,7 @@ void data_link_update() {
 void data_link_reset() {
     _data_link_state = DATA_LINK_STATE_INHIBITED;
 
-    prgn_load_node_id(settings_get_lcc_node_id());
+    prgn_load_node_id(settings_get_lcc_node_id().data);
 
     _node_id_alias = prgn_get_alias();
     _check_id_alias_state = CHECK_ID_ALIAS_STATE_1;

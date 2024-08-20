@@ -7,7 +7,7 @@
 #ifdef USE_LCC
     #include "lcc/lcc.h"
 
-uint8_t _lcc_node_id[6];
+lcc_node_id_t _lcc_node_id;
 uint16_t _lcc_next_event_id;
 
 void _load_lcc_settings();
@@ -51,12 +51,12 @@ void settings_init() {
 #endif
 
 #ifdef USE_LCC
-    _lcc_node_id[0] = LCC_DEFAULT_NODE_ID_0;
-    _lcc_node_id[1] = LCC_DEFAULT_NODE_ID_1;
-    _lcc_node_id[2] = LCC_DEFAULT_NODE_ID_2;
-    _lcc_node_id[3] = LCC_DEFAULT_NODE_ID_3;
-    _lcc_node_id[4] = LCC_DEFAULT_NODE_ID_4;
-    _lcc_node_id[5] = LCC_DEFAULT_NODE_ID_5;
+    _lcc_node_id.data[0] = LCC_DEFAULT_NODE_ID_0;
+    _lcc_node_id.data[1] = LCC_DEFAULT_NODE_ID_1;
+    _lcc_node_id.data[2] = LCC_DEFAULT_NODE_ID_2;
+    _lcc_node_id.data[3] = LCC_DEFAULT_NODE_ID_3;
+    _lcc_node_id.data[4] = LCC_DEFAULT_NODE_ID_4;
+    _lcc_node_id.data[5] = LCC_DEFAULT_NODE_ID_5;
 
     settings_set_lcc_node_id(_lcc_node_id);
 
@@ -249,33 +249,39 @@ bool settings_get_input_delay(uint8_t input, uint16_t *delay) {
 }
 
 #ifdef USE_LCC
-bool settings_set_lcc_node_id(uint8_t *node_id) {
-    for (uint8_t i = 0; i < LCC_NODE_ID_LENGTH; i++) {
-        _lcc_node_id[i] = node_id[i];
-    }
+bool settings_set_lcc_node_id(lcc_node_id_t node_id) {
+    _lcc_node_id = node_id;
 
     // update node id in permanent storage
-    if (settings_set_value(CV_LCC_NODE_ID_0_1, (uint16_t)_lcc_node_id[0] << 8 | _lcc_node_id[1]) == false) {
+    if (settings_set_value(CV_LCC_NODE_ID_0_1, (uint16_t)_lcc_node_id.data[0] << 8 | _lcc_node_id.data[1]) == false) {
         return false;
     }
 
-    if (settings_set_value(CV_LCC_NODE_ID_2_3, (uint16_t)_lcc_node_id[2] << 8 | _lcc_node_id[3]) == false) {
+    if (settings_set_value(CV_LCC_NODE_ID_2_3, (uint16_t)_lcc_node_id.data[2] << 8 | _lcc_node_id.data[3]) == false) {
         return false;
     }
 
-    if (settings_set_value(CV_LCC_NODE_ID_4_5, (uint16_t)_lcc_node_id[4] << 8 | _lcc_node_id[5]) == false) {
+    if (settings_set_value(CV_LCC_NODE_ID_4_5, (uint16_t)_lcc_node_id.data[4] << 8 | _lcc_node_id.data[5]) == false) {
         return false;
     }
 
     return true;
 }
 
-uint8_t *settings_get_lcc_node_id() {
+lcc_node_id_t settings_get_lcc_node_id() {
     return _lcc_node_id;
 }
 
-uint16_t settings_get_lcc_next_event_id() {
-    uint16_t event_id = _lcc_next_event_id;
+lcc_event_id_t settings_get_lcc_next_event_id() {
+    lcc_event_id_t event_id;
+
+    // copy node id into first 6 bytes and append next event id counter at the end
+    for (uint8_t i = 0; i < LCC_NODE_ID_LENGTH; i++) {
+        event_id.data[i] = _lcc_node_id.data[i];
+    }
+
+    event_id.data[6] = _lcc_next_event_id >> 8;
+    event_id.data[7] = _lcc_next_event_id & 0xFF;
 
     // advance id before returning it so it is new on every call
     _lcc_next_event_id += 1;
@@ -284,68 +290,70 @@ uint16_t settings_get_lcc_next_event_id() {
     return event_id;
 }
 
-bool settings_set_lcc_producer_consumer_event_id(uint8_t producer_consumer, uint8_t *event_id) {
+bool settings_set_lcc_producer_consumer_event_id(uint8_t producer_consumer, lcc_event_id_t event_id) {
     if (producer_consumer >= LCC_PRODUCER_CONSUMER_COUNT) {
         return false;
     }
 
     uint16_t address = _lcc_get_producer_consumer_event_id_address(producer_consumer);
 
-    uint16_t value = (uint16_t)event_id[0] << 8 | event_id[1];
+    // TODO: Use method to write 8 bytes at once
+    uint16_t value = (uint16_t)event_id.data[0] << 8 | event_id.data[1];
     if (settings_set_value(address, value) == false) {
         return false;
     }
 
-    value = (uint16_t)event_id[2] << 8 | event_id[3];
+    value = (uint16_t)event_id.data[2] << 8 | event_id.data[3];
     if (settings_set_value(address + 1, value) == false) {
         return false;
     }
 
-    value = (uint16_t)event_id[4] << 8 | event_id[5];
+    value = (uint16_t)event_id.data[4] << 8 | event_id.data[5];
     if (settings_set_value(address + 2, value) == false) {
         return false;
     }
 
-    value = (uint16_t)event_id[6] << 8 | event_id[7];
+    value = (uint16_t)event_id.data[6] << 8 | event_id.data[7];
 
     return settings_set_value(address + 3, value);
 }
 
-bool settings_get_lcc_producer_consumer_event_id(uint8_t producer_consumer, uint8_t *event_id) {
+bool settings_get_lcc_producer_consumer_event_id(uint8_t producer_consumer, lcc_event_id_t event_id) {
     if (producer_consumer >= LCC_PRODUCER_CONSUMER_COUNT) {
         return false;
     }
 
     uint16_t address = _lcc_get_producer_consumer_event_id_address(producer_consumer);
 
+    // TODO: Use method to read 8 bytes at once
     uint16_t value;
     if (settings_get_value(address, &value) == false) {
         return false;
     }
 
-    event_id[0] = value >> 8;
-    event_id[1] = value & 0xFF;
+    event_id.data[0] = value >> 8;
+    event_id.data[1] = value & 0xFF;
 
     if (settings_get_value(address + 1, &value) == false) {
         return false;
     }
 
-    event_id[2] = value >> 8;
-    event_id[3] = value & 0xFF;
+    event_id.data[2] = value >> 8;
+    event_id.data[3] = value & 0xFF;
 
     if (settings_get_value(address + 2, &value) == false) {
         return false;
     }
 
-    event_id[4] = value >> 8;
-    event_id[5] = value & 0xFF;
+    event_id.data[4] = value >> 8;
+    event_id.data[5] = value & 0xFF;
 
     if (settings_get_value(address + 3, &value) == false) {
         return false;
     }
 
-    event_id[7] = value >> 8;
-    event_id[8] = value & 0xFF;
+    event_id.data[7] = value >> 8;
+    event_id.data[8] = value & 0xFF;
 
     return true;
 }
@@ -423,17 +431,18 @@ bool _handle_programming_helper(uint16_t value) {
 void _load_lcc_settings() {
     uint16_t value;
 
+    // TODO: Use method to read 6 bytes at once
     settings_get_value(CV_LCC_NODE_ID_0_1, &value);
-    _lcc_node_id[0] = value >> 8;
-    _lcc_node_id[1] = value;
+    _lcc_node_id.data[0] = value >> 8;
+    _lcc_node_id.data[1] = value;
 
     settings_get_value(CV_LCC_NODE_ID_2_3, &value);
-    _lcc_node_id[2] = value >> 8;
-    _lcc_node_id[3] = value;
+    _lcc_node_id.data[2] = value >> 8;
+    _lcc_node_id.data[3] = value;
 
     settings_get_value(CV_LCC_NODE_ID_4_5, &value);
-    _lcc_node_id[4] = value >> 8;
-    _lcc_node_id[5] = value;
+    _lcc_node_id.data[4] = value >> 8;
+    _lcc_node_id.data[5] = value;
 
     settings_get_value(CV_LCC_NEXT_EVENT_ID, &_lcc_next_event_id);
 }

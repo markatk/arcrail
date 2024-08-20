@@ -23,7 +23,7 @@ void network_update() {
 
     // switch to initialized state
     if (data_link_get_state() == DATA_LINK_STATE_PERMITTED) {
-        data_link_send(MTI_INITIALIZATION_COMPLETE_SIMPLE_SET, LCC_NODE_ID_LENGTH, settings_get_lcc_node_id());
+        data_link_send(MTI_INITIALIZATION_COMPLETE_SIMPLE_SET, LCC_NODE_ID_LENGTH, settings_get_lcc_node_id().data);
 
         _state = NETWORK_STATE_INITIALIZED;
     }
@@ -88,10 +88,10 @@ void network_send(lcc_mti_t mti, uint8_t length, uint8_t *data) {
 }
 
 bool _compare_node_id(uint8_t *in) {
-    uint8_t *node_id = settings_get_lcc_node_id();
+    lcc_node_id_t node_id = settings_get_lcc_node_id();
 
     for (uint8_t i = 0; i < LCC_NODE_ID_LENGTH; i++) {
-        if (node_id[i] != in[i]) {
+        if (node_id.data[i] != in[i]) {
             return false;
         }
     }
@@ -101,6 +101,6 @@ bool _compare_node_id(uint8_t *in) {
 
 void _send_verified_node_id() {
     // TODO: Support full protocol
-    data_link_send(MTI_VERIFIED_NODE_ID_SIMPLE_SET, LCC_NODE_ID_LENGTH, settings_get_lcc_node_id());
+    data_link_send(MTI_VERIFIED_NODE_ID_SIMPLE_SET, LCC_NODE_ID_LENGTH, settings_get_lcc_node_id().data);
 }
 #endif
