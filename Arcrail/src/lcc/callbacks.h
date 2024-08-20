@@ -2,8 +2,7 @@
 
 #include "../../configuration.h"
 
-// TODO: Rename to LCC_NODE_ID_LENGTH
-#define NODE_ID_LENGTH 6
+#define LCC_NODE_ID_LENGTH 6
 #define LCC_EVENT_ID_LENGTH 8
 
 #define LCC_EVENT_STATE_UNKNOWN 0

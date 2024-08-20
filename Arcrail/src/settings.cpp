@@ -250,7 +250,7 @@ bool settings_get_input_delay(uint8_t input, uint16_t *delay) {
 
 #ifdef USE_LCC
 bool settings_set_lcc_node_id(uint8_t *node_id) {
-    for (uint8_t i = 0; i < NODE_ID_LENGTH; i++) {
+    for (uint8_t i = 0; i < LCC_NODE_ID_LENGTH; i++) {
         _lcc_node_id[i] = node_id[i];
     }
 

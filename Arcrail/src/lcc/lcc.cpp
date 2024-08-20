@@ -69,7 +69,7 @@ uint8_t lcc_get_state() {
 }
 
 void lcc_verify_node_id_addressed(uint8_t *node_id) {
-    data_link_send(MTI_VERIFY_NODE_ID_ADDRESSED, NODE_ID_LENGTH, node_id);
+    data_link_send(MTI_VERIFY_NODE_ID_ADDRESSED, LCC_NODE_ID_LENGTH, node_id);
 }
 
 void lcc_verify_node_id_global() {
@@ -110,7 +110,7 @@ void _process_event_report(uint8_t length, uint8_t *payload) {
     // get full node id
     uint8_t full_node_id[6];
 
-    for (uint8_t i = 0; i < NODE_ID_LENGTH; i++) {
+    for (uint8_t i = 0; i < LCC_NODE_ID_LENGTH; i++) {
         full_node_id[i] = payload[i];
     }
 
