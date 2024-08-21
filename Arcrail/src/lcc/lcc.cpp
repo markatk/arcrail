@@ -107,18 +107,12 @@ void _process_event_report(uint8_t length, uint8_t *payload) {
         return;
     }
 
-    // TODO: Change to read event id as whole and not care about node id?
-    // get full node id
-    lcc_node_id_t node_id;
+    lcc_event_id_t event_id;
 
-    for (uint8_t i = 0; i < LCC_NODE_ID_LENGTH; i++) {
-        node_id.data[i] = payload[i];
+    for (uint8_t i = 0; i < LCC_EVENT_ID_LENGTH; i++) {
+        event_id.data[i] = payload[i];
     }
 
-    // get event
-    uint16_t event = (uint16_t)payload[6] << 8 | payload[7];
-
-    // pass event with node id, event and rest of the payload
-    lcc_on_producer_consumer_event_report(node_id, event, length - LCC_EVENT_ID_LENGTH, payload + LCC_EVENT_ID_LENGTH);
+    lcc_on_producer_consumer_event_report(event_id, length - LCC_EVENT_ID_LENGTH, payload + LCC_EVENT_ID_LENGTH);
 }
 #endif

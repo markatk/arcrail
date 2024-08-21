@@ -119,16 +119,14 @@ void lcc_on_verified_node_id(lcc_node_id_t node_id, bool simple_set) {
     Serial.println(simple_set);
 }
 
-void lcc_on_producer_consumer_event_report(lcc_node_id_t node_id, uint16_t event, uint8_t length, uint8_t *payload) {
-    Serial.print("LCC pcer: full_node_id=");
+void lcc_on_producer_consumer_event_report(lcc_event_id_t event_id, uint8_t length, uint8_t *payload) {
+    Serial.print("LCC pcer: event_id=");
 
-    for (uint8_t i = 0; i < LCC_NODE_ID_LENGTH; i++) {
-        Serial.print(node_id.data[i], HEX);
+    for (uint8_t i = 0; i < LCC_EVENT_ID_LENGTH; i++) {
+        Serial.print(event_id.data[i], HEX);
         Serial.print(" ");
     }
 
-    Serial.print(", event=");
-    Serial.print(event, HEX);
     Serial.print(", payload=");
 
     for (uint8_t i = 0; i < length; i++) {

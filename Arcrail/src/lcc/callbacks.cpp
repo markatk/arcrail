@@ -30,7 +30,7 @@ __attribute__((weak)) void lcc_on_verify_node_id(uint8_t length, lcc_node_id_t n
 __attribute__((weak)) void lcc_on_verified_node_id(lcc_node_id_t node_id, bool simple_set) {
 }
 
-__attribute__((weak)) void lcc_on_producer_consumer_event_report(lcc_node_id_t node_id, uint16_t event, uint8_t length, uint8_t *payload) {
+__attribute__((weak)) void lcc_on_producer_consumer_event_report(lcc_event_id_t event_id, uint8_t length, uint8_t *payload) {
 }
 
 __attribute__((weak)) void lcc_on_identify_consumer(lcc_event_id_t event_id) {
