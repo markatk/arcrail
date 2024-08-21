@@ -44,7 +44,7 @@ lcc_event_id_t settings_get_lcc_next_event_id();
 
 bool settings_set_lcc_producer_consumer_event_id(uint8_t producer_consumer, lcc_event_id_t event_id);
 
-bool settings_get_lcc_producer_consumer_event_id(uint8_t producer_consumer, lcc_event_id_t event_id);
+bool settings_get_lcc_producer_consumer_event_id(uint8_t producer_consumer, lcc_event_id_t *event_id);
 #endif
 
 bool settings_on_programming_helper(uint8_t mode, uint16_t parameter);
