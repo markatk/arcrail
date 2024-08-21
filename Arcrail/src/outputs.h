@@ -7,3 +7,5 @@ void outputs_init();
 void outputs_update();
 
 void outputs_parse(uint16_t address, bool direction);
+
+bool outputs_try_get_state(uint8_t output, uint8_t *state);
