@@ -8,7 +8,7 @@
     #include "events.h"
     #include "mti.h"
     #include "network.h"
-    #include "producer.h"
+    #include "producer_consumer.h"
 
     #ifdef LCC_USE_BLUE_GOLD
         #include "blue_gold.h"
@@ -21,7 +21,7 @@ void lcc_init() {
 #ifdef USE_LCC
     data_link_init();
     network_init();
-    producer_init();
+    producer_consumer_init();
 
     #ifdef LCC_USE_BLUE_GOLD
     blue_gold_init();
@@ -35,7 +35,7 @@ void lcc_update() {
 #ifdef USE_LCC
     data_link_update();
     network_update();
-    producer_update();
+    producer_consumer_update();
 
     #ifdef LCC_USE_BLUE_GOLD
     blue_gold_update();
@@ -47,7 +47,7 @@ void lcc_reset() {
 #ifdef USE_LCC
     data_link_reset();
     network_reset();
-    producer_reset();
+    producer_consumer_reset();
 
     #ifdef LCC_USE_BLUE_GOLD
     blue_gold_reset();
@@ -77,7 +77,7 @@ void lcc_verify_node_id_global() {
 }
 
 void lcc_process_message(lcc_mti_t mti, lcc_node_id_alias_t source_nid, uint8_t length, uint8_t *data) {
-    producer_process_message(mti, source_nid, length, data);
+    producer_consumer_process_message(mti, source_nid, length, data);
 
     switch (mti) {
         case MTI_PRODUCER_CONSUMER_EVENT_REPORT:
@@ -98,7 +98,7 @@ void lcc_process_message(lcc_mti_t mti, lcc_node_id_alias_t source_nid, uint8_t 
 
     #ifdef USE_INPUTS
 void lcc_invoke_producer(uint8_t input, uint8_t state) {
-    producer_process_input(input, state);
+    producer_consumer_process_input(input, state);
 }
     #endif
 

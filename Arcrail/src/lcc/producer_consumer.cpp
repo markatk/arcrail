@@ -1,24 +1,24 @@
-#include "producer.h"
+#include "producer_consumer.h"
 
 #ifdef USE_LCC
     #include "../settings.h"
     #include "callbacks.h"
     #include "events.h"
+    #include "lcc.h"
     #include "mti.h"
     #include "network.h"
 
-    #ifdef USE_INPUTS
-        #include "../inputs.h"
-
-        // each input has two states (off and on)
-        #define PRODUCER_COUNT INPUT_COUNT * 2
-    #else
-        #error Inputs must be used to use producers
+    #ifdef USE_OUTPUTS
+        #include "../outputs.h"
     #endif
 
-bool _producer_states[PRODUCER_COUNT]; // false = unadvertised
+    #ifdef USE_INPUTS
+        #include "../inputs.h"
+    #endif
 
-bool _try_get_first_unadvertised_producer_index(uint8_t *index);
+bool _producer_consumer_states[LCC_PRODUCER_CONSUMER_COUNT]; // false = unadvertised
+
+bool _try_get_first_unadvertised_producer_consumer_index(uint8_t *index);
 
     #ifdef USE_INPUTS
 bool _try_get_input_event_id(uint8_t input, uint8_t state, uint8_t *event_id);
@@ -26,10 +26,10 @@ bool _is_input_advertised(uint8_t input, uint8_t state);
     #endif
 #endif
 
-void producer_init() {
+void producer_consumer_init() {
 }
 
-void producer_update() {
+void producer_consumer_update() {
 #ifdef USE_LCC
     // do nothing until the network is initialized
     if (network_get_state() != NETWORK_STATE_INITIALIZED) {
@@ -38,7 +38,7 @@ void producer_update() {
 
     // advertise first unadvertised producer
     uint8_t index;
-    if (_try_get_first_unadvertised_producer_index(&index) == false) {
+    if (_try_get_first_unadvertised_producer_consumer_index(&index) == false) {
         return;
     }
 
@@ -73,20 +73,20 @@ void producer_update() {
     network_send(mti, LCC_EVENT_ID_LENGTH, event_id);
 
     // // producer was advertised
-    _producer_states[index] = true;
+    _producer_consumer_states[index] = true;
 #endif
 }
 
-void producer_reset() {
+void producer_consumer_reset() {
 #ifdef USE_LCC
-    for (uint8_t i = 0; i < PRODUCER_COUNT; i++) {
-        _producer_states[i] = false;
+    for (uint8_t i = 0; i < LCC_PRODUCER_CONSUMER_COUNT; i++) {
+        _producer_consumer_states[i] = false;
     }
 #endif
 }
 
 #ifdef USE_LCC
-bool producer_process_message(uint16_t mti, uint16_t source_nid, uint8_t length, uint8_t *data) {
+bool producer_consumer_process_message(uint16_t mti, uint16_t source_nid, uint8_t length, uint8_t *data) {
     // all messages are expected to have an event id or event id range as data
     if (length < LCC_EVENT_ID_LENGTH) {
         return false;
@@ -125,7 +125,7 @@ bool producer_process_message(uint16_t mti, uint16_t source_nid, uint8_t length,
 }
 
     #ifdef USE_INPUTS
-void producer_process_input(uint8_t input, uint8_t state) {
+void producer_consumer_process_input(uint8_t input, uint8_t state) {
     // if the producer is not advertised do not send anything
     if (_is_input_advertised(input, state) == false) {
         return;
@@ -140,9 +140,9 @@ void producer_process_input(uint8_t input, uint8_t state) {
 }
     #endif
 
-bool _try_get_first_unadvertised_producer_index(uint8_t *index) {
-    for (uint8_t i = 0; i < PRODUCER_COUNT; i++) {
-        if (_producer_states[i] == false) {
+bool _try_get_first_unadvertised_producer_consumer_index(uint8_t *index) {
+    for (uint8_t i = 0; i < LCC_PRODUCER_CONSUMER_COUNT; i++) {
+        if (_producer_consumer_states[i] == false) {
             *index = i;
 
             return true;
@@ -186,7 +186,7 @@ bool _is_input_advertised(uint8_t input, uint8_t state) {
         index += 1;
     }
 
-    return _producer_states[index];
+    return _producer_consumer_states[index];
 }
     #endif
 #endif
