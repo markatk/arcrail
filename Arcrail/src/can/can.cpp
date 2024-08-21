@@ -135,7 +135,16 @@ void can_send_message(uint32_t identifier, uint8_t length, uint8_t *data) {
 #endif
 }
 
-__attribute__((weak)) void can_on_message_received(uint32_t identifier, uint8_t length, uint8_t *data) {
+bool can_is_transmit_buffer_full() {
+#ifdef USE_CAN
+    return message_queue_is_full(&_transmit_queue);
+#else
+    return false;
+#endif
+}
+
+__attribute__((weak)) void
+can_on_message_received(uint32_t identifier, uint8_t length, uint8_t *data) {
 }
 
 #ifdef USE_CAN

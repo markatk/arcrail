@@ -11,4 +11,6 @@ void can_update();
 
 void can_send_message(uint32_t identifier, uint8_t length, uint8_t *data);
 
+bool can_is_transmit_buffer_full();
+
 void can_on_message_received(uint32_t identifier, uint8_t length, uint8_t *data);
