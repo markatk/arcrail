@@ -327,28 +327,28 @@ bool settings_get_lcc_producer_consumer_event_id(uint8_t producer_consumer, lcc_
 
     // TODO: Use method to read 8 bytes at once
     uint16_t value;
-    if (settings_get_value(address, &value) == false) {
+    if (settings_get_value(address, &value) == false || value == 0xFFFF) {
         return false;
     }
 
     event_id.data[0] = value >> 8;
     event_id.data[1] = value & 0xFF;
 
-    if (settings_get_value(address + 1, &value) == false) {
+    if (settings_get_value(address + 1, &value) == false || value == 0xFFFF) {
         return false;
     }
 
     event_id.data[2] = value >> 8;
     event_id.data[3] = value & 0xFF;
 
-    if (settings_get_value(address + 2, &value) == false) {
+    if (settings_get_value(address + 2, &value) == false || value == 0xFFFF) {
         return false;
     }
 
     event_id.data[4] = value >> 8;
     event_id.data[5] = value & 0xFF;
 
-    if (settings_get_value(address + 3, &value) == false) {
+    if (settings_get_value(address + 3, &value) == false || value == 0xFFFF) {
         return false;
     }
 
