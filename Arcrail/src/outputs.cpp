@@ -145,6 +145,18 @@ void outputs_parse(uint16_t address, bool direciton) {
 #endif
 }
 
+bool outputs_try_get_state(uint8_t output, uint8_t *state) {
+#ifdef USE_OUTPUTS
+    if (output >= OUTPUT_COUNT) {
+        return false;
+    }
+
+    return read_output(output);
+#else
+    return false;
+#endif
+}
+
 #ifdef USE_OUTPUTS
 void _configure_switching_mode(uint8_t output) {
     // check if any switching mode is configured
