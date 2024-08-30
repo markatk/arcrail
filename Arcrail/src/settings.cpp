@@ -33,6 +33,11 @@ void settings_init() {
     EEPROM.update(CV_FIRMWARE * 2, FIRMWARE_VERSION & 0xFF);
     EEPROM.update(CV_FIRMWARE * 2 + 1, FIRMWARE_VERSION >> 8);
 
+    // reset data to firmware default
+#ifdef DEBUG
+    Serial.println("Factory reset");
+#endif
+
 #ifdef USE_INPUTS
     for (uint8_t i = 0; i < INPUT_COUNT; i++) {
         settings_set_value(CV_INPUT_ADDRESS_DELAY + i, 0);
