@@ -16,17 +16,28 @@
         #include "../inputs.h"
     #endif
 
-bool _producer_consumer_states[LCC_PRODUCER_CONSUMER_COUNT]; // false = unadvertised
+// holds producer and consumers (starting with consumers)
+typedef struct {
+    lcc_event_id_t event_id;
+    bool advertised;
+} producer_consumer_t;
+
+producer_consumer_t _producer_consumers[LCC_PRODUCER_CONSUMER_COUNT];
 
 bool _try_get_first_unadvertised_producer_consumer_index(uint8_t *index);
+lcc_mti_t _get_producer_consumer_event_mti(uint8_t index);
 
     #ifdef USE_INPUTS
-bool _try_get_input_event_id(uint8_t input, uint8_t state, uint8_t *event_id);
-bool _is_input_advertised(uint8_t input, uint8_t state);
+bool _get_input_producer_consumer_index(uint8_t input, uint8_t state, uint8_t *index);
+bool _try_get_input_event_id(uint8_t input, uint8_t state, lcc_event_id_t *event_id);
     #endif
 #endif
 
 void producer_consumer_init() {
+    // read initial event ids into producers/consumers
+    for (uint8_t i = 0; i < LCC_PRODUCER_CONSUMER_COUNT; i++) {
+        settings_get_lcc_producer_consumer_event_id(i, &_producer_consumers[i].event_id);
+    }
 }
 
 void producer_consumer_update() {
@@ -42,45 +53,35 @@ void producer_consumer_update() {
         return;
     }
 
-    // get correct mti for producer
-    #ifdef USE_INPUTS
-    uint8_t input = index / 2;
-    uint8_t input_state = index % 2;
-
-    uint8_t state;
-    if (inputs_try_get_state(input, &state) == false) {
+    lcc_mti_t mti = _get_producer_consumer_event_mti(index);
+    if (mti == 0) {
         return;
     }
 
-    uint16_t mti;
-    if ((input_state != 0 && state) || (input_state == 0 && !state)) {
-        mti = MTI_PRODUCER_IDENTIFIED_VALID;
-    } else {
-        mti = MTI_PRODUCER_IDENTIFIED_INVALID;
+    Serial.print("Advertise producer/consumer ");
+    Serial.print(index, DEC);
+    Serial.print(", ");
+
+    for (uint8_t i = 0; i < LCC_EVENT_ID_LENGTH; i++) {
+        Serial.print(_producer_consumers[index].event_id.data[i], HEX);
+        Serial.print(" ");
     }
 
-    uint8_t event_id[8];
+    Serial.print(", ");
 
-    if (_try_get_input_event_id(input, input_state, event_id) == false) {
-        return;
-    }
-    #else
-    uint16_t mti = MTI_PRODUCER_IDENTIFIED_UNKNOWN;
+    Serial.println(mti, HEX);
 
-        #error Unknown event id for producer
-    #endif
-
-    network_send(mti, LCC_EVENT_ID_LENGTH, event_id);
+    network_send(mti, LCC_EVENT_ID_LENGTH, _producer_consumers[index].event_id.data);
 
     // // producer was advertised
-    _producer_consumer_states[index] = true;
+    _producer_consumers[index].advertised = true;
 #endif
 }
 
 void producer_consumer_reset() {
 #ifdef USE_LCC
     for (uint8_t i = 0; i < LCC_PRODUCER_CONSUMER_COUNT; i++) {
-        _producer_consumer_states[i] = false;
+        _producer_consumers[i].advertised = false;
     }
 #endif
 }
@@ -126,23 +127,18 @@ bool producer_consumer_process_message(uint16_t mti, uint16_t source_nid, uint8_
 
     #ifdef USE_INPUTS
 void producer_consumer_process_input(uint8_t input, uint8_t state) {
-    // if the producer is not advertised do not send anything
-    if (_is_input_advertised(input, state) == false) {
+    lcc_event_id_t event_id;
+    if (_try_get_input_event_id(input, state, &event_id) == false) {
         return;
     }
 
-    uint8_t event_id[8];
-    if (_try_get_input_event_id(input, state, event_id) == false) {
-        return;
-    }
-
-    network_send(MTI_PRODUCER_CONSUMER_EVENT_REPORT, LCC_EVENT_ID_LENGTH, event_id);
+    network_send(MTI_PRODUCER_CONSUMER_EVENT_REPORT, LCC_EVENT_ID_LENGTH, event_id.data);
 }
     #endif
 
 bool _try_get_first_unadvertised_producer_consumer_index(uint8_t *index) {
     for (uint8_t i = 0; i < LCC_PRODUCER_CONSUMER_COUNT; i++) {
-        if (_producer_consumer_states[i] == false) {
+        if (_producer_consumers[i].advertised == false) {
             *index = i;
 
             return true;
@@ -152,41 +148,85 @@ bool _try_get_first_unadvertised_producer_consumer_index(uint8_t *index) {
     return false;
 }
 
+lcc_mti_t _get_producer_consumer_event_mti(uint8_t index) {
+    #ifdef USE_OUTPUTS
+    if (index < OUTPUT_COUNT * 2) {
+        // handle output
+        uint8_t output = index / 2;
+        uint8_t output_state = index % 2;
+
+        uint8_t state;
+        if (outputs_try_get_state(output, &state) == false) {
+            return MTI_CONSUMER_IDENTIFIED_UNKNOWN;
+        }
+
+        if ((output_state != 0 && state) || (output_state == 0 && !state)) {
+            return MTI_CONSUMER_IDENTIFIED_VALID;
+        } else {
+            return MTI_CONSUMER_IDENTIFIED_INVALID;
+        }
+    } else {
+    #elif defined(USE_INPUTS)
+    if (index < INPUT_COUNT * 2) {
+    #endif
+    // handle input
+    #ifdef USE_OUTPUTS
+        uint8_t input = (index - OUTPUT_COUNT * 2) / 2;
+    #else
+        uint8_t input = index / 2;
+    #endif
+
+        uint8_t input_state = index % 2;
+        uint8_t state;
+
+        if (inputs_try_get_state(input, &state) == false) {
+            return MTI_PRODUCER_IDENTIFIED_UNKNOWN;
+        }
+
+        if ((input_state != 0 && state) || (input_state == 0 && !state)) {
+            return MTI_PRODUCER_IDENTIFIED_VALID;
+        } else {
+            return MTI_PRODUCER_IDENTIFIED_INVALID;
+        }
+    }
+
+    return 0;
+}
+
     #ifdef USE_INPUTS
-bool _try_get_input_event_id(uint8_t input, uint8_t state, uint8_t *event_id) {
+bool _get_input_producer_consumer_index(uint8_t input, uint8_t state, uint8_t *index) {
     if (input >= INPUT_COUNT) {
         return false;
     }
 
-    // copy first 6 bytes from the node id
-    lcc_node_id_t node_id = settings_get_lcc_node_id();
-
-    for (uint8_t i = 0; i < LCC_NODE_ID_LENGTH; i++) {
-        event_id[i] = node_id.data[i];
-    }
-
-    // last 2 bytes are the event
-    event_id[6] = LCC_EVENT_INPUT_HIGH_BYTE;
-    event_id[7] = (input & 0x7F) << 1;
+        #ifdef USE_OUTPUTS
+    *index = OUTPUT_COUNT * 2 + input * 2;
+        #else
+    *index = input * 2;
+        #endif
 
     if (state) {
-        event_id[7] |= 0x01;
+        *index += 1;
     }
 
     return true;
 }
 
-bool _is_input_advertised(uint8_t input, uint8_t state) {
-    if (input >= INPUT_COUNT) {
+bool _try_get_input_event_id(uint8_t input, uint8_t state, lcc_event_id_t *event_id) {
+    uint8_t index;
+    if (_get_input_producer_consumer_index(input, state, &index) == false) {
         return false;
     }
 
-    uint8_t index = input * 2;
-    if (state) {
-        index += 1;
+    // if the producer/consumer is not advertised yet do not send anything
+    if (_producer_consumers[index].advertised == false) {
+        return false;
     }
 
-    return _producer_consumer_states[index];
+    // copy event from producer/consumer
+    *event_id = _producer_consumers[index].event_id;
+
+    return true;
 }
     #endif
 #endif
