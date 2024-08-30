@@ -357,8 +357,8 @@ bool settings_get_lcc_producer_consumer_event_id(uint8_t producer_consumer, lcc_
         return false;
     }
 
-    event_id->data[7] = value >> 8;
-    event_id->data[8] = value & 0xFF;
+    event_id->data[6] = value >> 8;
+    event_id->data[7] = value & 0xFF;
 
     return true;
 }
@@ -413,6 +413,12 @@ bool _is_valid_cv(uint16_t cv) {
     }
 
     if (cv >= CV_INPUT_ADDRESS_DELAY && cv < CV_INPUT_ADDRESS_DELAY + INPUT_COUNT) {
+        return true;
+    }
+#endif
+
+#ifdef USE_LCC
+    if (cv >= CV_LCC_PRODUCER_CONSUMER_EVENT_ID_BASE && cv <= CV_LCC_PRODUCER_CONSUMER_EVENT_ID_BASE + LCC_PRODUCER_CONSUMER_COUNT * 4) {
         return true;
     }
 #endif
