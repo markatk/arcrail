@@ -65,10 +65,24 @@ void settings_init() {
 
     settings_set_lcc_node_id(_lcc_node_id);
 
-    _lcc_next_event_id = 0;
-    settings_set_value(CV_LCC_NEXT_EVENT_ID, _lcc_next_event_id);
+    // copy node id into event id for all default events
+    lcc_event_id_t event_id;
 
-    // TODO: set initial producer/consumer event ids
+    for (uint8_t i = 0; i < LCC_NODE_ID_LENGTH; i++) {
+        event_id.data[i] = _lcc_node_id.data[i];
+    }
+
+    _lcc_next_event_id = 0;
+
+    for (uint8_t i = 0; i < LCC_PRODUCER_CONSUMER_COUNT; i++) {
+        event_id.data[6] = _lcc_next_event_id >> 8;
+        event_id.data[7] = _lcc_next_event_id & 0xFF;
+        _lcc_next_event_id += 1;
+
+        settings_set_lcc_producer_consumer_event_id(i, event_id);
+    }
+
+    settings_set_value(CV_LCC_NEXT_EVENT_ID, _lcc_next_event_id);
 #endif
 }
 
