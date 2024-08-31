@@ -6,6 +6,7 @@
     #include "data_link.h"
     #include "lcc.h"
     #include "mti.h"
+    #include "transport.h"
 
 uint8_t _state;
 
@@ -52,7 +53,7 @@ void network_process_message(lcc_mti_t mti, lcc_node_id_alias_t source_nid, uint
     }
 
     // callbacks
-    lcc_process_message(mti, source_nid, length, data);
+    transport_process_message(mti, source_nid, length, data);
 
     lcc_node_id_t node_id;
 

@@ -31,7 +31,7 @@ void lcc_verify_node_id_addressed(lcc_node_id_t node_id);
 
 void lcc_verify_node_id_global();
 
-// internally called by network layer
+// internally called by transport layer
 void lcc_process_message(lcc_mti_t mti, lcc_node_id_alias_t source_nid, uint8_t length, uint8_t *data);
 
     #ifdef USE_INPUTS

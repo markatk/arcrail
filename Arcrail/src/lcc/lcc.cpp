@@ -8,24 +8,14 @@
     #include "events.h"
     #include "mti.h"
     #include "network.h"
-    #include "producer_consumer.h"
-
-    #ifdef LCC_USE_BLUE_GOLD
-        #include "blue_gold.h"
-    #endif
-
-void _process_event_report(uint8_t length, uint8_t *payload);
+    #include "transport.h"
 #endif
 
 void lcc_init() {
 #ifdef USE_LCC
     data_link_init();
     network_init();
-    producer_consumer_init();
-
-    #ifdef LCC_USE_BLUE_GOLD
-    blue_gold_init();
-    #endif
+    transport_init();
 #endif
 
     lcc_reset();
@@ -35,11 +25,7 @@ void lcc_update() {
 #ifdef USE_LCC
     data_link_update();
     network_update();
-    producer_consumer_update();
-
-    #ifdef LCC_USE_BLUE_GOLD
-    blue_gold_update();
-    #endif
+    transport_update();
 #endif
 }
 
@@ -47,11 +33,7 @@ void lcc_reset() {
 #ifdef USE_LCC
     data_link_reset();
     network_reset();
-    producer_consumer_reset();
-
-    #ifdef LCC_USE_BLUE_GOLD
-    blue_gold_reset();
-    #endif
+    transport_reset();
 #endif
 }
 
@@ -77,42 +59,13 @@ void lcc_verify_node_id_global() {
 }
 
 void lcc_process_message(lcc_mti_t mti, lcc_node_id_alias_t source_nid, uint8_t length, uint8_t *data) {
-    producer_consumer_process_message(mti, source_nid, length, data);
-
-    switch (mti) {
-        case MTI_PRODUCER_CONSUMER_EVENT_REPORT:
-            _process_event_report(length, data);
-            break;
-
-        case MTI_PRODUCER_CONSUMER_EVENT_REPORT_WITH_PAYLOAD:
-            _process_event_report(length, data);
-            break;
-
-        default:
-            break;
-    }
-
     // callbacks
     lcc_on_message(mti, source_nid, length, data);
 }
 
     #ifdef USE_INPUTS
 void lcc_invoke_producer(uint8_t input, uint8_t state) {
-    producer_consumer_process_input(input, state);
+    transport_invoke_producer(input, state);
 }
     #endif
-
-void _process_event_report(uint8_t length, uint8_t *payload) {
-    if (length < LCC_EVENT_ID_LENGTH) {
-        return;
-    }
-
-    lcc_event_id_t event_id;
-
-    for (uint8_t i = 0; i < LCC_EVENT_ID_LENGTH; i++) {
-        event_id.data[i] = payload[i];
-    }
-
-    lcc_on_producer_consumer_event_report(event_id, length - LCC_EVENT_ID_LENGTH, payload + LCC_EVENT_ID_LENGTH);
-}
 #endif
