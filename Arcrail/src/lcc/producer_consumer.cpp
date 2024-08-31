@@ -125,6 +125,30 @@ bool producer_consumer_process_message(uint16_t mti, uint16_t source_nid, uint8_
     }
 }
 
+bool producer_consumer_set_event_id(uint8_t producer_consumer, lcc_event_id_t event_id) {
+    if (producer_consumer >= LCC_PRODUCER_CONSUMER_COUNT) {
+        return false;
+    }
+
+    for (uint8_t i = 0; i < LCC_EVENT_ID_LENGTH; i++) {
+        _producer_consumers[producer_consumer].event_id.data[i] = event_id.data[i];
+    }
+
+    return settings_set_lcc_producer_consumer_event_id(producer_consumer, event_id);
+}
+
+bool producer_consumer_get_event_id(uint8_t producer_consumer, lcc_event_id_t *event_id) {
+    if (producer_consumer >= LCC_PRODUCER_CONSUMER_COUNT) {
+        return false;
+    }
+
+    for (uint8_t i = 0; i < LCC_EVENT_ID_LENGTH; i++) {
+        event_id->data[i] = _producer_consumers[producer_consumer].event_id.data[i];
+    }
+
+    return true;
+}
+
     #ifdef USE_INPUTS
 void producer_consumer_process_input(uint8_t input, uint8_t state) {
     lcc_event_id_t event_id;
