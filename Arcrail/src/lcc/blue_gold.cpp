@@ -82,7 +82,7 @@ void blue_gold_learn(lcc_event_id_t event_id) {
     // update event id in every producer/consumer flagged to learn
     for (uint8_t i = 0; i < LCC_PRODUCER_CONSUMER_COUNT; i++) {
         if (_learn_states[i] == false) {
-            return;
+            continue;
         }
 
         producer_consumer_set_event_id(i, event_id);
@@ -111,15 +111,13 @@ void _set_blue_state(uint8_t state) {
 
     if (_blue_state > LCC_PRODUCER_CONSUMER_COUNT) {
         _blue_state = 0;
-
-        // turn off led since the state was rolled over
-    #ifdef LCC_BLUE_LED
-        led_set(LCC_BLUE_LED, LOW);
-    #endif
     }
+
     #ifdef LCC_BLUE_LED
-    else {
+    if (_blue_state > 0) {
         led_blink(LCC_BLUE_LED, _blue_state);
+    } else {
+        led_set(LCC_BLUE_LED, LOW);
     }
     #endif
 }
