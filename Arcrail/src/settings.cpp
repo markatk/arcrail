@@ -20,7 +20,6 @@ bool _handle_programming_helper(uint16_t value);
 void settings_init() {
     // check if initial configuration has to be set
     if (EEPROM.read(CV_FIRMWARE * 2) != 0xFF && EEPROM.read(CV_FIRMWARE * 2 + 1) != 0xFF) {
-// load some data into memory
 #ifdef USE_LCC
         // load some data into memory
         _load_lcc_settings();
@@ -395,6 +394,10 @@ bool _is_valid_cv(uint16_t cv) {
     if (cv >= CV_LCC_NODE_ID_0_1 && cv <= CV_LCC_NODE_ID_4_5) {
         return true;
     }
+
+    if (cv >= CV_LCC_PRODUCER_CONSUMER_EVENT_ID_BASE && cv <= CV_LCC_PRODUCER_CONSUMER_EVENT_ID_BASE + LCC_PRODUCER_CONSUMER_COUNT * 4) {
+        return true;
+    }
 #endif
 
 #ifdef USE_OUTPUTS
@@ -427,12 +430,6 @@ bool _is_valid_cv(uint16_t cv) {
     }
 
     if (cv >= CV_INPUT_ADDRESS_DELAY && cv < CV_INPUT_ADDRESS_DELAY + INPUT_COUNT) {
-        return true;
-    }
-#endif
-
-#ifdef USE_LCC
-    if (cv >= CV_LCC_PRODUCER_CONSUMER_EVENT_ID_BASE && cv <= CV_LCC_PRODUCER_CONSUMER_EVENT_ID_BASE + LCC_PRODUCER_CONSUMER_COUNT * 4) {
         return true;
     }
 #endif
