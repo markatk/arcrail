@@ -167,4 +167,17 @@ void lcc_on_producer_identified(lcc_event_id_t event_id, uint8_t event_state) {
     Serial.println(event_state, HEX);
     #endif
 }
+
+void lcc_on_learn_event(lcc_event_id_t event_id) {
+    #ifdef DEBUG
+    Serial.print("LCC learn event: event_id=");
+
+    for (uint8_t i = 0; i < LCC_EVENT_ID_LENGTH; i++) {
+        Serial.print(event_id.data[i], HEX);
+        Serial.print(" ");
+    }
+
+    Serial.println();
+    #endif
+}
 #endif

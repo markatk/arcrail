@@ -50,3 +50,6 @@ __attribute__((weak)) void lcc_on_producer_identified(lcc_event_id_t event_id, u
 
 __attribute__((weak)) void lcc_on_producer_range_identified(lcc_event_id_t event_id_range) {
 }
+
+__attribute__((weak)) void lcc_on_learn_event(lcc_event_id_t event_id) {
+}
