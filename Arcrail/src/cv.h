@@ -2,6 +2,8 @@
 
 #include "../configuration.h"
 
+#define CV_FIRMWARE 20
+
 #ifdef USE_OUTPUTS
     #define CV_OUTPUT_TURN_ON_BASE 21
     #define CV_OUTPUT_TURN_OFF_BASE 41
