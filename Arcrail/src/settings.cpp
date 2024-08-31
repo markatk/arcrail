@@ -9,11 +9,14 @@ bool _handle_programming_helper(uint16_t value);
 
 void settings_init() {
     // check if initial configuration has to be set
-    if (EEPROM.read(0) != 0xFF || EEPROM.read(1) != 0xFF) {
+    if (EEPROM.read(CV_FIRMWARE * 2) != 0xFF && EEPROM.read(CV_FIRMWARE * 2 + 1) != 0xFF) {
         return;
     }
 
-    // reset data to firmware default
+    // firmware version cannot be written via settings function
+    EEPROM.update(CV_FIRMWARE * 2, FIRMWARE_VERSION & 0xFF);
+    EEPROM.update(CV_FIRMWARE * 2 + 1, FIRMWARE_VERSION >> 8);
+
 #ifdef USE_INPUTS
     for (uint8_t i = 0; i < INPUT_COUNT; i++) {
         settings_set_value(CV_INPUT_ADDRESS_DELAY + i, 0);
@@ -43,14 +46,7 @@ bool settings_set_value(uint16_t address, uint16_t value) {
 }
 
 bool settings_get_value(uint16_t address, uint16_t *value) {
-    // special read-only CVs
-    if (address == 20) {
-        *value = FIRMWARE_VERSION;
-
-        return true;
-    }
-
-    if (_is_valid_cv(address) == false) {
+    if (address != CV_FIRMWARE && _is_valid_cv(address) == false) {
         return false;
     }
 
@@ -220,9 +216,11 @@ __attribute__((weak)) bool settings_on_programming_helper(uint8_t mode, uint16_t
 
 bool _is_valid_cv(uint16_t cv) {
     // module address, programming helper and other various addresses
+#ifdef USE_LOCONET
     if (cv <= 1) {
         return true;
     }
+#endif
 
 #ifdef USE_OUTPUTS
     // output configurations
