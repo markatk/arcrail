@@ -26,6 +26,12 @@ void settings_init() {
 #ifdef USE_LOCONET
     settings_set_value(0, SETTINGS_DEFAULT_MODULE_VALUE);
     settings_set_value(1, SETTINGS_DEFAULT_MODE_VALUE);
+#else
+    for (uint8_t i = 0; i < OUTPUT_COUNT; i++) {
+        settings_set_value(CV_SWITCHING_MODE_BASE + i, 0);
+        settings_set_value(CV_SWITCHING_2ND_PARAMETER_BASE + i, 0);
+        settings_set_value(CV_OUTPUT_DELAY_BASE + i, 0);
+    }
 #endif
 }
 
