@@ -16,6 +16,10 @@ bool producer_consumer_set_event_id(uint8_t producer_consumer, lcc_event_id_t ev
 
 bool producer_consumer_get_event_id(uint8_t producer_consumer, lcc_event_id_t *event_id);
 
+    #ifdef USE_OUTPUTS
+void producer_consumer_process_event_report(lcc_event_id_t event_id);
+    #endif
+
     #ifdef USE_INPUTS
 void producer_consumer_process_input(uint8_t input, uint8_t state);
     #endif

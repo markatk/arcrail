@@ -83,6 +83,10 @@ void _process_event_report(uint8_t length, uint8_t *payload) {
         event_id.data[i] = payload[i];
     }
 
+    #ifdef USE_OUTPUTS
+    producer_consumer_process_event_report(event_id);
+    #endif
+
     lcc_on_producer_consumer_event_report(event_id, length - LCC_EVENT_ID_LENGTH, payload + LCC_EVENT_ID_LENGTH);
 }
 

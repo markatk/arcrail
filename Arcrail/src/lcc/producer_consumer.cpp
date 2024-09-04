@@ -7,6 +7,7 @@
     #include "lcc.h"
     #include "mti.h"
     #include "network.h"
+    #include "utility.h"
 
     #ifdef USE_OUTPUTS
         #include "../outputs.h"
@@ -148,6 +149,20 @@ bool producer_consumer_get_event_id(uint8_t producer_consumer, lcc_event_id_t *e
 
     return true;
 }
+
+    #ifdef USE_OUTPUTS
+void producer_consumer_process_event_report(lcc_event_id_t event_id) {
+    // process all producers with the given event
+    for (uint8_t i = 0; i < LCC_CONSUMER_COUNT; i++) {
+        if (compare_event_ids(_producer_consumers[i].event_id, event_id)) {
+            uint8_t output = i / 2;
+            uint8_t output_state = i % 2;
+
+            outputs_set(output, output_state);
+        }
+    }
+}
+    #endif
 
     #ifdef USE_INPUTS
 void producer_consumer_process_input(uint8_t input, uint8_t state) {
