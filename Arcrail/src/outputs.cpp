@@ -111,6 +111,29 @@ void outputs_update() {
 #endif
 }
 
+void outputs_set(uint8_t output, uint8_t state) {
+#ifdef USE_OUTPUTS
+    if (output >= OUTPUT_COUNT) {
+        return;
+    }
+
+    if (state) {
+        // only enable the output if no delay is configured
+        if (settings_has_output_delay(output) == false) {
+            write_output(output, HIGH);
+        }
+
+        // _configure_switching_mode(output);
+    } else {
+        write_output(output, LOW);
+
+        // reset switching time so output is not triggered
+        _switching_time[output] = 0;
+        _switching_mode[output] = SWITCHING_MODE_OFF;
+    }
+#endif
+}
+
 void outputs_parse(uint16_t address, bool direciton) {
 #ifdef USE_OUTPUTS
     // check each output if given address is assigned
@@ -122,23 +145,14 @@ void outputs_parse(uint16_t address, bool direciton) {
         if (settings_get_output_turn_on_address(i, &output_address, &output_direction)) {
             // if output_direction = 2 ignore the direction of the command
             if (output_address == address && (output_direction == direciton || output_direction == 2)) {
-                // only enable the output if no delay is configured
-                if (settings_has_output_delay(i) == false) {
-                    write_output(i, HIGH);
-                }
-
-                _configure_switching_mode(i);
+                outputs_set(i, true);
             }
         }
 
         if (settings_get_output_turn_off_address(i, &output_address, &output_direction)) {
             // if output_direction = 2 ignore the direction of the command
             if (output_address == address && (output_direction == direciton || output_direction == 2)) {
-                write_output(i, LOW);
-
-                // reset switching time so output is not triggered
-                _switching_time[i] = 0;
-                _switching_mode[i] = SWITCHING_MODE_OFF;
+                outputs_set(i, false);
             }
         }
     }
