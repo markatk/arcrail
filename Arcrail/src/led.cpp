@@ -24,12 +24,15 @@ uint8_t read_led(led_t *led);
 #endif
 
 void led_init() {
+#ifdef USE_LEDS
     for (uint8_t i = 0; i < LED_COUNT; i++) {
         initialize_led(&_leds[i], LEDS[i]);
     }
+#endif
 }
 
 void led_update() {
+#ifdef USE_LEDS
     // wait till timer was triggered
     if (timer_was_triggered() == false) {
         return;
@@ -38,6 +41,7 @@ void led_update() {
     for (uint8_t i = 0; i < LED_COUNT; i++) {
         update_led(&_leds[i]);
     }
+#endif
 }
 
 #ifdef USE_LEDS
