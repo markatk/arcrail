@@ -19,15 +19,19 @@ void _update_button(button_t *button);
 #endif
 
 void buttons_init() {
+#ifdef USE_BUTTONS
     for (uint8_t i = 0; i < BUTTON_COUNT; i++) {
         _initialize_button(&_buttons[i], BUTTONS[i]);
     }
+#endif
 }
 
 void buttons_update() {
+#ifdef USE_BUTTONS
     for (uint8_t i = 0; i < BUTTON_COUNT; i++) {
         _update_button(&_buttons[i]);
     }
+#endif
 }
 
 #ifdef USE_BUTTONS
