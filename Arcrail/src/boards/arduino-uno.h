@@ -72,5 +72,15 @@ const uint8_t INPUTS[INPUT_COUNT] = {
 //======================== LEDs =============================================
 //===========================================================================
 
-#define STATUS_LED
-#define PIN_STATUS_LED 13
+#define USE_LEDS
+#define LED_COUNT 1
+
+#define LED_1 13
+
+// create led pin array
+// TODO: Create array in configuration.h with C preprocessor macro
+const uint8_t LEDS[LED_COUNT] = {
+    LED_1};
+
+// index in the LEDS array NOT the pin number
+#define STATUS_LED 0
