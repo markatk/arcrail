@@ -123,7 +123,7 @@ void outputs_set(uint8_t output, uint8_t state) {
             write_output(output, HIGH);
         }
 
-        // _configure_switching_mode(output);
+        _configure_switching_mode(output);
     } else {
         write_output(output, LOW);
 
