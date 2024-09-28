@@ -134,7 +134,7 @@ void outputs_set(uint8_t output, uint8_t state) {
 #endif
 }
 
-void outputs_parse(uint16_t address, bool direciton) {
+void outputs_parse(uint16_t address, bool direction) {
 #ifdef USE_OUTPUTS
     // check each output if given address is assigned
     // loop is needed since more than 1 output can listen to the same address
@@ -144,14 +144,14 @@ void outputs_parse(uint16_t address, bool direciton) {
     for (uint8_t i = 0; i < OUTPUT_COUNT; i++) {
         if (settings_get_output_turn_on_address(i, &output_address, &output_direction)) {
             // if output_direction = 2 ignore the direction of the command
-            if (output_address == address && (output_direction == direciton || output_direction == 2)) {
+            if (output_address == address && (output_direction == direction || output_direction == 2)) {
                 outputs_set(i, true);
             }
         }
 
         if (settings_get_output_turn_off_address(i, &output_address, &output_direction)) {
             // if output_direction = 2 ignore the direction of the command
-            if (output_address == address && (output_direction == direciton || output_direction == 2)) {
+            if (output_address == address && (output_direction == direction || output_direction == 2)) {
                 outputs_set(i, false);
             }
         }
