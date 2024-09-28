@@ -149,6 +149,10 @@ void status_led_flash() {
     led_flash(STATUS_LED);
 }
 
+void status_led_flash(uint8_t count) {
+    led_flash(STATUS_LED, count);
+}
+
 uint8_t status_led_get_mode() {
     return led_get_mode(STATUS_LED);
 }

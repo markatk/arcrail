@@ -41,6 +41,8 @@ void status_led_blink(uint8_t count);
 
 void status_led_flash();
 
+void status_led_flash(uint8_t count);
+
 uint8_t status_led_get_mode();
     #endif
 #endif
