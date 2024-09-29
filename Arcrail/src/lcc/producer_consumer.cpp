@@ -35,10 +35,12 @@ bool _try_get_input_event_id(uint8_t input, uint8_t state, lcc_event_id_t *event
 #endif
 
 void producer_consumer_init() {
+#ifdef USE_LCC
     // read initial event ids into producers/consumers
     for (uint8_t i = 0; i < LCC_PRODUCER_CONSUMER_COUNT; i++) {
         settings_get_lcc_producer_consumer_event_id(i, &_producer_consumers[i].event_id);
     }
+#endif
 }
 
 void producer_consumer_update() {

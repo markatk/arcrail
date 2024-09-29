@@ -16,29 +16,36 @@ void _process_learn_event(uint8_t length, uint8_t *payload);
 #endif
 
 void transport_init() {
+#ifdef USE_LCC
     producer_consumer_init();
 
-#ifdef LCC_USE_BLUE_GOLD
+    #ifdef LCC_USE_BLUE_GOLD
     blue_gold_init();
+    #endif
 #endif
 }
 
 void transport_update() {
+#ifdef USE_LCC
     producer_consumer_update();
 
-#ifdef LCC_USE_BLUE_GOLD
+    #ifdef LCC_USE_BLUE_GOLD
     blue_gold_update();
+    #endif
 #endif
 }
 
 void transport_reset() {
+#ifdef USE_LCC
     producer_consumer_reset();
 
-#ifdef LCC_USE_BLUE_GOLD
+    #ifdef LCC_USE_BLUE_GOLD
     blue_gold_reset();
+    #endif
 #endif
 }
 
+#ifdef USE_LCC
 void transport_process_message(lcc_mti_t mti, lcc_node_id_alias_t source_nid, uint8_t length, uint8_t *data) {
     producer_consumer_process_message(mti, source_nid, length, data);
 
@@ -71,7 +78,6 @@ void transport_invoke_producer(uint8_t input, uint8_t state) {
     producer_consumer_process_input(input, state);
 }
 
-#ifdef USE_LCC
 void _process_event_report(uint8_t length, uint8_t *payload) {
     if (length < LCC_EVENT_ID_LENGTH) {
         return;
