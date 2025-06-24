@@ -22,8 +22,8 @@ if [ -z $BOARD_FQDN ]; then
     exit 0
 fi
 
-if [ -n $BOARD_OPTIONS ]; then
-    $BOARD_OPTIONS_ARGS=--board-options $BOARD_OPTIONS
+if [ -n "$BOARD_OPTIONS" ]; then
+    $BOARD_OPTIONS_ARGS="--board-options $BOARD_OPTIONS"
 fi
 
 # Install required libraries (if there are any)
