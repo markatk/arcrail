@@ -1,6 +1,7 @@
 #!/bin/sh
 
 # Configuration
+BOARD_CORE=arduino:avr
 BOARD_FQDN=arduino:avr:uno
 BOARD_OPTIONS=
 BOARD_NAME=BOARD_ARDUINO_UNO
