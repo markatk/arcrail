@@ -1,0 +1,36 @@
+name: arduino-cli
+
+on: [push]
+
+jobs:
+  test_builds:
+    name: Run arduino-cli
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        test-platform:
+        # AVR
+        - arduino-uno
+
+        # Custom boards
+        - loconet-accessory-decoder-rev-c
+        - loconet-accessory-decoder-rev-d
+        - loconet-feedback-decoder-rev-a
+        - loconet-feedback-decoder-rev-a-168
+        - loconet-feedback-decoder-rev-b
+        - loconet-feedback-decoder-rev-b-168
+        - loconet-feedback-decoder-rev-c
+        - loconet-turnout-decoder-rev-a
+
+    steps:
+
+    - name: Check out the PR
+      uses: actions/checkout@v3
+
+    - name: Install Arduino CLI
+      uses: arduino/setup-arduino-cli@v2
+
+    - name: Compile ${{ matrix.test-platform }}
+      run: bash ${{ github.workspace }}/boards/${{ matrix.test-platform }}.sh
