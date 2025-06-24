@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   test_builds:
-    name: Run arduino-cli
+    name: Run compile script
 
     runs-on: ubuntu-latest
 

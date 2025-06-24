@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+set -e
 
 # Ensure arduino-cli is installed
 arduino-cli version > /dev/null 2>&1
