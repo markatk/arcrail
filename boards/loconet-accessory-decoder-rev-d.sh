@@ -8,5 +8,6 @@ BOARD_NAME=BOARD_LOCONET_ACCESSORY_DECODER_REV_D
 PROGRAMMER=stk500
 # PORT=
 SKETCH=./Arcrail
+LIBRARIES=LocoNet
 
 source $(dirname $0)/board.sh
