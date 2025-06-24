@@ -27,6 +27,13 @@ if [ -n "$BOARD_OPTIONS" ]; then
     BOARD_OPTIONS_ARGS="--board-options $BOARD_OPTIONS"
 fi
 
+# Install core (if required)
+if [ -n "$BOARD_CORE" ]; then
+    echo "Installation required core..."
+
+    arduino-cli core install --additional-urls https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json $BOARD_CORE
+fi
+
 # Install required libraries (if there are any)
 if [ -n $LIBRARIES ]; then
     echo "Installation required libraries..."
