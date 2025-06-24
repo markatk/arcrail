@@ -14,7 +14,7 @@ fi
 if [ -z $SKETCH ]; then
     echo "No sketch folder provided. Using current folder as sketch folder."
 
-    $SKETCH=.
+    SKETCH=.
 fi
 
 if [ -z $BOARD_FQDN ]; then
@@ -24,7 +24,7 @@ if [ -z $BOARD_FQDN ]; then
 fi
 
 if [ -n "$BOARD_OPTIONS" ]; then
-    $BOARD_OPTIONS_ARGS="--board-options $BOARD_OPTIONS"
+    BOARD_OPTIONS_ARGS="--board-options $BOARD_OPTIONS"
 fi
 
 # Install required libraries (if there are any)
