@@ -22,10 +22,8 @@ if [ -z $BOARD_FQDN ]; then
     exit 0
 fi
 
-if [ -z $BOARD_OPTIONS ]; then
-    echo "Board options are not set. Set them with the BOARD_OPTIONS variable."
-
-    exit 0
+if [ -n $BOARD_OPTIONS ]; then
+    $BOARD_OPTIONS_ARGS=--board-options $BOARD_OPTIONS
 fi
 
 # Install required libraries (if there are any)
@@ -41,7 +39,7 @@ echo "Compiling project..."
 arduino-cli compile \
     --clean \
     -b $BOARD_FQDN \
-    --board-options $BOARD_OPTIONS \
+    $BOARD_OPTIONS_ARGS \
     --build-property build.extra_flags=-D$BOARD_NAME \
     $SKETCH
 
@@ -66,7 +64,7 @@ arduino-cli burn-bootloader \
     -b $BOARD_FQDN \
     -p $PORT \
     -P $PROGRAMMER \
-    --board-options $BOARD_OPTIONS
+    $BOARD_OPTIONS_ARGS
 
 # Upload project to
 echo "Uploading project..."
@@ -75,6 +73,6 @@ arduino-cli upload \
     -b $BOARD_FQDN \
     -p $PORT \
     -P $PROGRAMMER \
-    --board-options $BOARD_OPTIONS \
+    $BOARD_OPTIONS_ARGS \
     $SKETCH
 
