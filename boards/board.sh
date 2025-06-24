@@ -28,6 +28,13 @@ if [ -z $BOARD_OPTIONS ]; then
     exit 0
 fi
 
+# Install required libraries (if there are any)
+if [ -n $LIBRARIES ]; then
+    echo "Installation required libraries..."
+
+    arduino-cli lib install $LIBRARIES
+fi
+
 # Compile project
 echo "Compiling project..."
 
