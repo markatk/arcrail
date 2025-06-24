@@ -40,13 +40,13 @@ arduino-cli compile \
 
 # Check if parameters for upload are specified
 if [ -z $PROGRAMMER ]; then
-    echo "Programmer is not set. Skipping upload step."
+    echo "Programmer is not set. Skipping upload steps."
 
     exit 0
 fi
 
 if [ -z $PORT ]; then
-    echo "Port is not set. Skipping upload step."
+    echo "Port is not set. Skipping upload steps."
 
     exit 0
 fi
